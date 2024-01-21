@@ -1,5 +1,7 @@
 import { program } from "commander";
 import inquirer, { Question } from "inquirer";
+import fse from "fs-extra";
+import path from "path";
 
 async function main() {
   program.option("--name");
@@ -28,6 +30,11 @@ async function main() {
       options[key] = answers[key];
     });
   });
+
+  const folderName = options.name;
+
+  const sourceDir = path.join(__dirname, "templates/nft");
+  fse.copySync(sourceDir, folderName);
 }
 
 main()
