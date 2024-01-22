@@ -3,13 +3,17 @@ import inquirer, { Question } from "inquirer";
 import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
+import toPascalCase from "./utils";
 
-function updateFile(filename: string, patterns: string[], data: string[]) {
-  let filedata = fs.readFileSync(filename, "utf8");
-  patterns.forEach((pattern, i) => {
-    filedata = filedata.replace(new RegExp(pattern, "g"), data[i]);
+function updateFiles(filenames: string[], changes: string[][]) {
+  filenames.forEach((filename) => {
+    let filedata = fs.readFileSync(filename, "utf8");
+    changes.forEach((change) => {
+      const [pattern, data] = change;
+      filedata = filedata.replace(new RegExp(pattern, "g"), data);
+    });
+    fs.writeFileSync(filename, filedata);
   });
-  fs.writeFileSync(filename, filedata);
 }
 
 async function main() {
@@ -47,15 +51,37 @@ async function main() {
     }
   });
 
-  const folderName = (options.name as string).toLowerCase().replace(/ /g, "-");
+  /**
+   * Example:
+   *
+   * contractName:  "My awesome dapp"
+   * contractClass: "MyAwesomeDapp"
+   * projectName:   "my-awesome-dapp"
+   */
+  const contractName = options.name as string;
+  const contractClass = toPascalCase(contractName);
+  const projectName = contractName.toLowerCase().replace(/ /g, "-");
 
   const sourceDir = path.join(__dirname, "templates/nft");
-  fse.copySync(sourceDir, folderName);
+  fse.copySync(sourceDir, projectName);
 
-  updateFile(
-    path.join(folderName, "package.json"),
-    ["##_PROJECT_NAME_##"],
-    [folderName]
+  updateFiles(
+    [
+      path.join(projectName, "package.json"),
+      path.join(projectName, "src/koinos.config.js"),
+      path.join(projectName, "src/asconfig.json"),
+      path.join(projectName, "src/assembly/Contract.ts"),
+    ],
+    [
+      ["___CONTRACT_NAME___", contractName],
+      ["___CONTRACT_CLASS___", contractClass],
+      ["___PROJECT_NAME___", projectName],
+    ]
+  );
+
+  fs.renameSync(
+    path.join(projectName, "src/assembly/Contract.ts"),
+    path.join(projectName, "src/assembly", `${contractClass}.ts`)
   );
 }
 

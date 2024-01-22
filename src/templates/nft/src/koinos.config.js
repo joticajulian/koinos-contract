@@ -2,9 +2,9 @@ const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
 module.exports = {
-  class: "KondorElementusNft",
+  class: "___CONTRACT_CLASS___",
   proto: ["./proto/empty.proto"],
-  files: ["./KondorElementusNft.ts"],
+  files: ["./___CONTRACT_CLASS___.ts"],
   sourceDir: "./assembly",
   buildDir: "./build",
   filesImport: [

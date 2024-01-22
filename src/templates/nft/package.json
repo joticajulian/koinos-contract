@@ -1,5 +1,5 @@
 {
-  "name": "##_PROJECT_NAME_##",
+  "name": "___PROJECT_NAME___",
   "version": "1.0.0",
   "dependencies": {
     "@koinos/sdk-as": "npm:@koinosbox/sdk-as@1.0.4-alpha.1",

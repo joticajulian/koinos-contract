@@ -1,14 +1,14 @@
 {
   "targets": {
     "debug": {
-      "binaryFile": "./build/debug/nft.wasm",
-      "textFile": "./build/debug/nft.wat",
+      "binaryFile": "./build/debug/___CONTRACT_CLASS___.wasm",
+      "textFile": "./build/debug/___CONTRACT_CLASS___.wat",
       "sourceMap": true,
       "debug": true
     },
     "release": {
-      "binaryFile": "./build/release/nft.wasm",
-      "textFile": "./build/release/nft.wat",
+      "binaryFile": "./build/release/___CONTRACT_CLASS___.wasm",
+      "textFile": "./build/release/___CONTRACT_CLASS___.wat",
       "sourceMap": true,
       "optimizeLevel": 3,
       "shrinkLevel": 0,
