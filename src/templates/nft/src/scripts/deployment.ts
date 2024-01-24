@@ -1,8 +1,7 @@
-import fs from "fs";
-import path from "path";
 import { Signer, Contract, Provider } from "koilib";
 import { TransactionJson } from "koilib/lib/interface";
-import abi from "../build/kondorelementusnft-abi.json";
+import { getBytecode } from "./utils";
+import abi from "../build/___CONTRACT_CLASS___-abi.json";
 import koinosConfig from "../koinos.config.js";
 
 const [inputNetworkName] = process.argv.slice(2);
@@ -12,24 +11,22 @@ async function main() {
   const network = koinosConfig.networks[networkName];
   if (!network) throw new Error(`network ${networkName} not found`);
   const provider = new Provider(network.rpcNodes);
-  const accountWithFunds = Signer.fromWif(
-    network.accounts.manaSharer.privateKey
+  const manaSharer = Signer.fromWif(network.accounts.manaSharer.privateKeyWif);
+  const contractAccount = Signer.fromWif(
+    network.accounts.contract.privateKeyWif
   );
-  const contractAccount = Signer.fromWif(network.accounts.contract.privateKey);
-  accountWithFunds.provider = provider;
+  manaSharer.provider = provider;
   contractAccount.provider = provider;
 
   const contract = new Contract({
     signer: contractAccount,
     provider,
     abi,
-    bytecode: fs.readFileSync(
-      path.join(__dirname, "../build/release/nft.wasm")
-    ),
+    bytecode: getBytecode(),
     options: {
-      payer: accountWithFunds.address,
+      payer: manaSharer.address,
       beforeSend: async (tx: TransactionJson) => {
-        await accountWithFunds.signTransaction(tx);
+        await manaSharer.signTransaction(tx);
       },
     },
   });

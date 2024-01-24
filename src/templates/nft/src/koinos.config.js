@@ -1,5 +1,24 @@
 const path = require("path");
+const { HDKoinos } = require("@koinosbox/hdkoinos");
 require("dotenv").config({ path: path.join(__dirname, "../.env") });
+
+const hdKoinosMainnet = process.env.MAINNET_MNEMONIC
+  ? new HDKoinos(process.env.MAINNET_MNEMONIC)
+  : undefined;
+
+const hdKoinosHarbinger = process.env.HARBINGER_MNEMONIC
+  ? new HDKoinos(process.env.HARBINGER_MNEMONIC)
+  : undefined;
+
+function keysMainnet(index) {
+  if (!hdKoinosMainnet) return { privateKeyWif: "", address: "" };
+  return hdKoinosMainnet.deriveKeyAccount(index);
+}
+
+function keysHarbinger(index) {
+  if (!hdKoinosHarbinger) return { privateKeyWif: "", address: "" };
+  return hdKoinosHarbinger.deriveKeyAccount(index);
+}
 
 module.exports = {
   class: "___CONTRACT_CLASS___",
@@ -29,30 +48,21 @@ module.exports = {
   ],
   networks: {
     harbinger: {
-      rpcNodes: [
-        "https://harbinger-api.koinos.io",
-        "https://testnet.koinosblocks.com",
-      ],
+      rpcNodes: ["https://harbinger-api.koinos.io"],
       accounts: {
         manaSharer: {
-          privateKey: process.env.HARBINGER_MANA_SHARER_PRIVATE_KEY,
+          privateKeyWif: process.env.HARBINGER_MANA_SHARER_PRIVATE_KEY,
         },
-        contract: {
-          privateKey: process.env.HARBINGER_NFT_CONTRACT_PRIVATE_KEY,
-          id: process.env.HARBINGER_NFT_CONTRACT_ID,
-        },
+        contract: keysHarbinger(process.env.HARBINGER_NFT),
       },
     },
     mainnet: {
-      rpcNodes: ["https://api.koinos.io", "https://api.koinosblocks.com"],
+      rpcNodes: ["https://api.koinos.io"],
       accounts: {
         manaSharer: {
-          privateKey: process.env.MAINNET_MANA_SHARER_PRIVATE_KEY,
+          privateKeyWif: process.env.MAINNET_MANA_SHARER_PRIVATE_KEY,
         },
-        contract: {
-          privateKey: process.env.MAINNET_NFT_CONTRACT_PRIVATE_KEY,
-          id: process.env.MAINNET_NFT_CONTRACT_ID,
-        },
+        contract: keysMainnet(process.env.MAINNET_NFT),
       },
     },
   },
