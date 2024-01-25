@@ -8,14 +8,18 @@
  * - PRICE
  */
 import { Signer, Contract, Provider, Transaction, utils } from "koilib";
-import { TransactionJson } from "koilib/lib/interface";
+import * as dotenv from "dotenv";
+import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
 import abi from "../build/___CONTRACT_CLASS___-abi.json";
 import abiMarketPlace from "./abi-market.json";
 import koinosConfig from "../koinos.config.js";
 
+dotenv.config();
+
 const TOTAL_NFTS = 150;
 const PRICE = "50.0"; // KOIN
 const NFTS_PER_TX = 10;
+const KOIN_CONTRACT_ID = "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL";
 
 const marketPlaces = [
   {
@@ -44,40 +48,51 @@ async function main() {
         .join(" or ")}. Received '${inputMarketPlace}'`
     );
   const provider = new Provider(network.rpcNodes);
-  const manaSharer = Signer.fromWif(network.accounts.manaSharer.privateKey);
-  const contractAccount = Signer.fromWif(network.accounts.contract.privateKey);
-  manaSharer.provider = provider;
-  contractAccount.provider = provider;
 
-  const options = {
-    payer: manaSharer.address,
-    payee: contractAccount.address,
-    beforeSend: async (tx: TransactionJson) => {
-      await manaSharer.signTransaction(tx);
-    },
-    rcLimit: "5000000000",
-  };
+  const contractAccount = Signer.fromWif(
+    network.accounts.contract.privateKeyWif
+  );
+  contractAccount.provider = provider;
 
   const contract = new Contract({
     signer: contractAccount,
     provider,
     abi,
-    options,
   });
 
   const marketContract = new Contract({
     id: marketPlace.id,
     provider,
     abi: abiMarketPlace,
-    options,
   });
+
+  const rcLimit = "2000000000";
+  let txOptions: TransactionOptions;
+  if (process.env.USE_FREE_MANA === "true") {
+    txOptions = {
+      payer: network.accounts.freeManaSharer.id,
+      rcLimit,
+    };
+  } else {
+    const manaSharer = Signer.fromWif(
+      network.accounts.manaSharer.privateKeyWif
+    );
+    manaSharer.provider = provider;
+    txOptions = {
+      payer: manaSharer.address,
+      rcLimit,
+      beforeSend: async (tx: TransactionJson) => {
+        await manaSharer.signTransaction(tx);
+      },
+    };
+  }
 
   let nextNFT = 1;
   while (nextNFT < TOTAL_NFTS) {
     const tx = new Transaction({
       signer: contractAccount,
       provider,
-      options,
+      options: txOptions,
     });
 
     let i = nextNFT;
@@ -93,22 +108,10 @@ async function main() {
         continue;
       }
 
-      const orderArgs = {
+      const { result: resultOrder } = await marketContract.functions.get_order({
         collection: contract.getId(),
         token_id: tokenId,
-      };
-
-      const createOrderArgs = {
-        collection: contract.getId(),
-        token_sell: "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL",
-        token_id: tokenId,
-        token_price: utils.parseUnits(PRICE, 8),
-        time_expire: "0",
-      };
-
-      const { result: resultOrder } = await marketContract.functions.get_order(
-        orderArgs
-      );
+      });
 
       if (resultOrder) continue;
 
@@ -118,10 +121,13 @@ async function main() {
         to: marketContract.getId(),
       });
 
-      await tx.pushOperation(
-        marketContract.functions.create_order,
-        createOrderArgs
-      );
+      await tx.pushOperation(marketContract.functions.create_order, {
+        collection: contract.getId(),
+        token_sell: KOIN_CONTRACT_ID,
+        token_id: tokenId,
+        token_price: utils.parseUnits(PRICE, 8),
+        time_expire: "0",
+      });
     }
 
     if (tx.transaction.operations.length > 0) {

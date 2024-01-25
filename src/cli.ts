@@ -71,6 +71,9 @@ async function main() {
       path.join(projectName, "src/koinos.config.js"),
       path.join(projectName, "src/asconfig.json"),
       path.join(projectName, "src/assembly/Contract.ts"),
+      path.join(projectName, "src/scripts/deployment.ts"),
+      path.join(projectName, "src/scripts/mint.ts"),
+      path.join(projectName, "src/scripts/placeOrders.ts"),
     ],
     [
       ["___CONTRACT_NAME___", contractName],

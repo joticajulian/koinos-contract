@@ -50,19 +50,37 @@ module.exports = {
     harbinger: {
       rpcNodes: ["https://harbinger-api.koinos.io"],
       accounts: {
+        freeManaSharer: { id: "1K6oESWG87m3cB3M2WVkzxdTr38po8WToN" },
         manaSharer: {
           privateKeyWif: process.env.HARBINGER_MANA_SHARER_PRIVATE_KEY,
         },
-        contract: keysHarbinger(process.env.HARBINGER_NFT),
+        contract: {
+          privateKeyWif: process.env.HARBINGER_NFT_CONTRACT_PRIVATE_KEY,
+        },
+        /**
+         * you can also derive the private keys from the seed:
+         *
+         * contract: keysHarbinger(process.env.HARBINGER_NFT),
+         */
       },
     },
     mainnet: {
       rpcNodes: ["https://api.koinos.io"],
       accounts: {
+        freeManaSharer: {
+          id: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa", // @kondor-nft
+        },
         manaSharer: {
           privateKeyWif: process.env.MAINNET_MANA_SHARER_PRIVATE_KEY,
         },
-        contract: keysMainnet(process.env.MAINNET_NFT),
+        contract: {
+          privateKeyWif: process.env.MAINNET_NFT_CONTRACT_PRIVATE_KEY,
+        },
+        /**
+         * you can also derive the private keys from the seed:
+         *
+         * contract: keysMainnet(process.env.MAINNET_NFT),
+         */
       },
     },
   },

@@ -1,8 +1,14 @@
+/**
+ * Script to deploy the contract
+ */
 import { Signer, Contract, Provider } from "koilib";
-import { TransactionJson } from "koilib/lib/interface";
+import * as dotenv from "dotenv";
+import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
 import { getBytecode } from "./utils";
 import abi from "../build/___CONTRACT_CLASS___-abi.json";
 import koinosConfig from "../koinos.config.js";
+
+dotenv.config();
 
 const [inputNetworkName] = process.argv.slice(2);
 
@@ -11,24 +17,39 @@ async function main() {
   const network = koinosConfig.networks[networkName];
   if (!network) throw new Error(`network ${networkName} not found`);
   const provider = new Provider(network.rpcNodes);
-  const manaSharer = Signer.fromWif(network.accounts.manaSharer.privateKeyWif);
+
   const contractAccount = Signer.fromWif(
     network.accounts.contract.privateKeyWif
   );
-  manaSharer.provider = provider;
   contractAccount.provider = provider;
+
+  const rcLimit = "10000000000";
+  let txOptions: TransactionOptions;
+  if (process.env.USE_FREE_MANA === "true") {
+    txOptions = {
+      payer: network.accounts.freeManaSharer.id,
+      rcLimit,
+    };
+  } else {
+    const manaSharer = Signer.fromWif(
+      network.accounts.manaSharer.privateKeyWif
+    );
+    manaSharer.provider = provider;
+    txOptions = {
+      payer: manaSharer.address,
+      rcLimit,
+      beforeSend: async (tx: TransactionJson) => {
+        await manaSharer.signTransaction(tx);
+      },
+    };
+  }
 
   const contract = new Contract({
     signer: contractAccount,
     provider,
     abi,
     bytecode: getBytecode(),
-    options: {
-      payer: manaSharer.address,
-      beforeSend: async (tx: TransactionJson) => {
-        await manaSharer.signTransaction(tx);
-      },
-    },
+    options: txOptions,
   });
 
   const { operation: takeOwnership } =
@@ -43,7 +64,6 @@ async function main() {
 
   const { receipt, transaction } = await contract.deploy({
     abi: JSON.stringify(abi),
-    rcLimit: "10000000000",
     nextOperations: [takeOwnership],
   });
   console.log("Transaction submitted");
