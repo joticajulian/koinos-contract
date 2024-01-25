@@ -1,11 +1,19 @@
+/**
+ * Script to mint NFTs.
+ * - The owner of the new NFTs will be the contract itself.
+ * - The token ID is computed from the number of the NFT
+ *
+ * Before running this script update:
+ * - TOTAL_NFTS
+ */
 import { Signer, Contract, Provider, Transaction } from "koilib";
 import fs from "fs";
 import { TransactionJson } from "koilib/lib/interface";
-import abi from "../build/kondorelementusnft-abi.json";
+import abi from "../build/___CONTRACT_CLASS___-abi.json";
 import koinosConfig from "../koinos.config.js";
 
-const TOTAL_NFTS = 1500;
-const NFTS_PER_TX = 5;
+const TOTAL_NFTS = 150;
+const NFTS_PER_TX = 10;
 
 const [inputNetworkName] = process.argv.slice(2);
 
@@ -25,8 +33,12 @@ async function main() {
     abi,
   });
 
-  let current = 1;
-  while (current < TOTAL_NFTS) {
+  let nextNFT = 1;
+  const { result: resultTotalSupply } = await contract.functions.total_supply();
+  if (resultTotalSupply && resultTotalSupply.value) {
+    nextNFT = Number(resultTotalSupply.value) + 1;
+  }
+  while (nextNFT < TOTAL_NFTS) {
     const tx = new Transaction({
       signer: contractAccount,
       provider,
@@ -39,8 +51,8 @@ async function main() {
       },
     });
 
-    let i = current;
-    while (i < current + NFTS_PER_TX && i <= TOTAL_NFTS) {
+    let i = nextNFT;
+    while (i < nextNFT + NFTS_PER_TX && i <= TOTAL_NFTS) {
       const metadata = fs.readFileSync(`metadata/${i}.json`, "utf8");
       const tokenId = `0x${Buffer.from(Number(i).toString()).toString("hex")}`;
       await tx.pushOperation(contract.functions.mint, {
@@ -55,13 +67,13 @@ async function main() {
     }
 
     const receipt = await tx.send();
-    console.log(`Transaction submitted: from ${current} to ${i - 1}`);
+    console.log(`Transaction submitted: from ${nextNFT} to ${i - 1}`);
     console.log(
       `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`
     );
     const { blockNumber } = await tx.wait("byBlock", 60000);
     console.log(`mined in block ${blockNumber} (${networkName})`);
-    current = i;
+    nextNFT = i;
   }
 }
 

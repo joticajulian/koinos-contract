@@ -31,12 +31,25 @@ async function main() {
     },
   });
 
+  const { operation: takeOwnership } =
+    await contract.functions.transfer_ownership(
+      {
+        value: contract.getId(),
+      },
+      {
+        onlyOperation: true,
+      }
+    );
+
   const { receipt, transaction } = await contract.deploy({
     abi: JSON.stringify(abi),
     rcLimit: "10000000000",
+    nextOperations: [takeOwnership],
   });
-  console.log("Transaction submitted. Receipt: ");
-  console.log(receipt);
+  console.log("Transaction submitted");
+  console.log(
+    `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`
+  );
   const { blockNumber } = await transaction.wait("byBlock", 60000);
   console.log(
     `Contract ${contractAccount.address} uploaded in block number ${blockNumber} (${networkName})`
