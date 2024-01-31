@@ -2,10 +2,6 @@
  * Script to list the NFTs in a market place.
  * This script assumes that the owner of the NFTs is the
  * contract itself.
- *
- * Befor running this script update:
- * - TOTAL_NFTS
- * - PRICE
  */
 import { Signer, Contract, Provider, Transaction, utils } from "koilib";
 import * as dotenv from "dotenv";
@@ -16,8 +12,15 @@ import koinosConfig from "../koinos.config.js";
 
 dotenv.config();
 
-const TOTAL_NFTS = 150;
-const PRICE = "50.0"; // KOIN
+if (!process.env.TOTAL_NFTS)
+  throw new Error(`The env var TOTAL_NFTS is not defined`);
+if (!process.env.PRICE) throw new Error(`The env var PRICE is not defined`);
+if (["true", "false"].includes(process.env.USE_FREE_MANA))
+  throw new Error(`The env var useFreeMana must be true or false`);
+
+const useFreeMana = process.env.USE_FREE_MANA === "true";
+const totalNfts = Number(process.env.TOTAL_NFTS);
+const price = process.env.PRICE; // KOIN
 const NFTS_PER_TX = 10;
 const KOIN_CONTRACT_ID = "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL";
 
@@ -68,7 +71,7 @@ async function main() {
 
   const rcLimit = "2000000000";
   let txOptions: TransactionOptions;
-  if (process.env.USE_FREE_MANA === "true") {
+  if (useFreeMana) {
     txOptions = {
       payer: network.accounts.freeManaSharer.id,
       rcLimit,
@@ -88,7 +91,7 @@ async function main() {
   }
 
   let nextNFT = 1;
-  while (nextNFT < TOTAL_NFTS) {
+  while (nextNFT < totalNfts) {
     const tx = new Transaction({
       signer: contractAccount,
       provider,
@@ -96,7 +99,7 @@ async function main() {
     });
 
     let i = nextNFT;
-    while (i < nextNFT + NFTS_PER_TX && i <= TOTAL_NFTS) {
+    while (i < nextNFT + NFTS_PER_TX && i <= totalNfts) {
       const tokenId = `0x${Buffer.from(Number(i).toString()).toString("hex")}`;
 
       const { result } = await contract.functions.owner_of({
@@ -125,7 +128,7 @@ async function main() {
         collection: contract.getId(),
         token_sell: KOIN_CONTRACT_ID,
         token_id: tokenId,
-        token_price: utils.parseUnits(PRICE, 8),
+        token_price: utils.parseUnits(price, 8),
         time_expire: "0",
       });
     }

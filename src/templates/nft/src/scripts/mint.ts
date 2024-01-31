@@ -2,12 +2,6 @@
  * Script to mint NFTs.
  * - The owner of the new NFTs will be the contract itself.
  * - The token ID is computed from the number of the NFT
- *
- * Before running this script update:
- * - TOTAL_NFTS: Total number of nfts in the collection
- * - WRITE_METADATA: Boolean defining if the metadata will be
- *     written in the blockchain or not. In case of yes, update
- *     the files in the metadata folder.
  */
 import { Signer, Contract, Provider, Transaction } from "koilib";
 import fs from "fs";
@@ -18,8 +12,16 @@ import koinosConfig from "../koinos.config.js";
 
 dotenv.config();
 
-const TOTAL_NFTS = 150;
-const WRITE_METADATA = true;
+if (!process.env.TOTAL_NFTS)
+  throw new Error(`The env var TOTAL_NFTS is not defined`);
+if (["true", "false"].includes(process.env.WRITE_METADATA))
+  throw new Error(`The env var WRITE_METADATA must be true or false`);
+if (["true", "false"].includes(process.env.USE_FREE_MANA))
+  throw new Error(`The env var USE_FREE_MANA must be true or false`);
+
+const useFreeMana = process.env.USE_FREE_MANA === "true";
+const totalNfts = Number(process.env.TOTAL_NFTS);
+const writeMetadata = process.env.WRITE_METADATA === "true";
 const NFTS_PER_TX = 10;
 
 const [inputNetworkName] = process.argv.slice(2);
@@ -43,7 +45,7 @@ async function main() {
 
   const rcLimit = "2000000000";
   let txOptions: TransactionOptions;
-  if (process.env.USE_FREE_MANA === "true") {
+  if (useFreeMana) {
     txOptions = {
       payer: network.accounts.freeManaSharer.id,
       rcLimit,
@@ -67,7 +69,7 @@ async function main() {
   if (resultTotalSupply && resultTotalSupply.value) {
     nextNFT = Number(resultTotalSupply.value) + 1;
   }
-  while (nextNFT < TOTAL_NFTS) {
+  while (nextNFT < totalNfts) {
     const tx = new Transaction({
       signer: contractAccount,
       provider,
@@ -75,14 +77,14 @@ async function main() {
     });
 
     let i = nextNFT;
-    while (i < nextNFT + NFTS_PER_TX && i <= TOTAL_NFTS) {
+    while (i < nextNFT + NFTS_PER_TX && i <= totalNfts) {
       const tokenId = `0x${Buffer.from(Number(i).toString()).toString("hex")}`;
       await tx.pushOperation(contract.functions.mint, {
         token_id: tokenId,
         to: contract.getId(),
       });
 
-      if (WRITE_METADATA) {
+      if (writeMetadata) {
         const metadata = fs.readFileSync(`metadata/${i}.json`, "utf8");
         await tx.pushOperation(contract.functions.set_metadata, {
           token_id: tokenId,

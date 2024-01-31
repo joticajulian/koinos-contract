@@ -10,6 +10,10 @@ import koinosConfig from "../koinos.config.js";
 
 dotenv.config();
 
+if (["true", "false"].includes(process.env.USE_FREE_MANA))
+  throw new Error(`The env var USE_FREE_MANA must be true or false`);
+const useFreeMana = process.env.USE_FREE_MANA === "true";
+
 const [inputNetworkName] = process.argv.slice(2);
 
 async function main() {
@@ -25,7 +29,7 @@ async function main() {
 
   const rcLimit = "10000000000";
   let txOptions: TransactionOptions;
-  if (process.env.USE_FREE_MANA === "true") {
+  if (useFreeMana) {
     txOptions = {
       payer: network.accounts.freeManaSharer.id,
       rcLimit,
