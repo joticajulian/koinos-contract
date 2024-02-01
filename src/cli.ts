@@ -57,6 +57,7 @@ async function main() {
    * contractName:  "My awesome dapp"
    * contractClass: "MyAwesomeDapp"
    * projectName:   "my-awesome-dapp"
+   * abiFile:       "myawesomedapp-abi.json"
    */
   const contractName = options.name as string;
   const contractClass = toPascalCase(contractName);
