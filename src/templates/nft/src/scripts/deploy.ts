@@ -5,12 +5,12 @@ import { Signer, Contract, Provider } from "koilib";
 import * as dotenv from "dotenv";
 import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
 import { getBytecode } from "./utils";
-import abi from "../build/___CONTRACT_CLASS___-abi.json";
+import abi from "../build/___CONTRACT_ABI_FILE___";
 import koinosConfig from "../koinos.config.js";
 
 dotenv.config();
 
-if (["true", "false"].includes(process.env.USE_FREE_MANA))
+if (!["true", "false"].includes(process.env.USE_FREE_MANA))
   throw new Error(`The env var USE_FREE_MANA must be true or false`);
 const useFreeMana = process.env.USE_FREE_MANA === "true";
 
@@ -32,6 +32,7 @@ async function main() {
   if (useFreeMana) {
     txOptions = {
       payer: network.accounts.freeManaSharer.id,
+      payee: contractAccount.address,
       rcLimit,
     };
   } else {
@@ -41,6 +42,7 @@ async function main() {
     manaSharer.provider = provider;
     txOptions = {
       payer: manaSharer.address,
+      payee: contractAccount.address,
       rcLimit,
       beforeSend: async (tx: TransactionJson) => {
         await manaSharer.signTransaction(tx);

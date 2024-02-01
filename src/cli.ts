@@ -61,6 +61,7 @@ async function main() {
   const contractName = options.name as string;
   const contractClass = toPascalCase(contractName);
   const projectName = contractName.toLowerCase().replace(/ /g, "-");
+  const abiFile = `${contractClass.toLowerCase()}-abi.json`;
 
   const sourceDir = path.join(__dirname, "templates/nft");
   fse.copySync(sourceDir, projectName);
@@ -71,20 +72,26 @@ async function main() {
       path.join(projectName, "src/koinos.config.js"),
       path.join(projectName, "src/asconfig.json"),
       path.join(projectName, "src/assembly/Contract.ts"),
-      path.join(projectName, "src/scripts/deployment.ts"),
+      path.join(projectName, "src/scripts/deploy.ts"),
       path.join(projectName, "src/scripts/mint.ts"),
-      path.join(projectName, "src/scripts/placeOrders.ts"),
+      path.join(projectName, "src/scripts/sell.ts"),
     ],
     [
       ["___CONTRACT_NAME___", contractName],
       ["___CONTRACT_CLASS___", contractClass],
       ["___PROJECT_NAME___", projectName],
+      ["___CONTRACT_ABI_FILE___", abiFile],
     ]
   );
 
   fs.renameSync(
     path.join(projectName, "src/assembly/Contract.ts"),
     path.join(projectName, "src/assembly", `${contractClass}.ts`)
+  );
+
+  fs.renameSync(
+    path.join(projectName, ".env.example"),
+    path.join(projectName, ".env")
   );
 }
 

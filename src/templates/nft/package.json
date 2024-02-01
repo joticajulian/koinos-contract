@@ -32,6 +32,7 @@
     "build": "yarn precompile && yarn asbuild",
     "deploy": "ts-node src/scripts/deployment.ts",
     "mint": "ts-node src/scripts/mint.ts",
+    "sell": "ts-node src/scripts/sell.ts",
     "lint": "eslint --max-warnings 0 --ext ts \"*/assembly/**/*.ts\""
   },
   "config": {

@@ -6,7 +6,7 @@
 import { Signer, Contract, Provider, Transaction, utils } from "koilib";
 import * as dotenv from "dotenv";
 import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
-import abi from "../build/___CONTRACT_CLASS___-abi.json";
+import abi from "../build/___CONTRACT_ABI_FILE___";
 import abiMarketPlace from "./abi-market.json";
 import koinosConfig from "../koinos.config.js";
 
@@ -15,8 +15,8 @@ dotenv.config();
 if (!process.env.TOTAL_NFTS)
   throw new Error(`The env var TOTAL_NFTS is not defined`);
 if (!process.env.PRICE) throw new Error(`The env var PRICE is not defined`);
-if (["true", "false"].includes(process.env.USE_FREE_MANA))
-  throw new Error(`The env var useFreeMana must be true or false`);
+if (!["true", "false"].includes(process.env.USE_FREE_MANA))
+  throw new Error(`The env var USE_FREE_MANA must be true or false`);
 
 const useFreeMana = process.env.USE_FREE_MANA === "true";
 const totalNfts = Number(process.env.TOTAL_NFTS);
@@ -74,6 +74,7 @@ async function main() {
   if (useFreeMana) {
     txOptions = {
       payer: network.accounts.freeManaSharer.id,
+      payee: contract.getId(),
       rcLimit,
     };
   } else {
@@ -83,6 +84,7 @@ async function main() {
     manaSharer.provider = provider;
     txOptions = {
       payer: manaSharer.address,
+      payee: contract.getId(),
       rcLimit,
       beforeSend: async (tx: TransactionJson) => {
         await manaSharer.signTransaction(tx);
@@ -131,6 +133,8 @@ async function main() {
         token_price: utils.parseUnits(price, 8),
         time_expire: "0",
       });
+
+      i += 1;
     }
 
     if (tx.transaction.operations.length > 0) {
@@ -144,6 +148,10 @@ async function main() {
     }
     nextNFT = i;
   }
+
+  console.log(
+    `Sell orders placed for collection ${contractAccount.address} (${networkName})`
+  );
 }
 
 main()
