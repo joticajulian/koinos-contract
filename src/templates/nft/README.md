@@ -28,7 +28,7 @@ _uri: string = "";
 If the metadata will be served by an external API then define its URI:
 
 ```ts
-_uri: string = "https://example.com"
+_uri: string = "https://example.com";
 ```
 
 You can also customize the contract by adding your code in this file.
@@ -88,4 +88,4 @@ To sell the NFTs in https://dapp.koinosraffles.io/marketplace run:
 
 ```sh
 yarn sell mainnet koinos-raffles
-``` 
+```

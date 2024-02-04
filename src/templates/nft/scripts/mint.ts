@@ -5,6 +5,7 @@
  */
 import { Signer, Contract, Provider, Transaction } from "koilib";
 import fs from "fs";
+import path from "path";
 import * as dotenv from "dotenv";
 import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
 import abi from "../src/build/___CONTRACT_ABI_FILE___";
@@ -87,7 +88,10 @@ async function main() {
       });
 
       if (writeMetadata) {
-        const metadata = fs.readFileSync(`metadata/${i}.json`, "utf8");
+        const metadata = fs.readFileSync(
+          path.join(__dirname, `metadata/${i}.json`),
+          "utf8"
+        );
         await tx.pushOperation(contract.functions.set_metadata, {
           token_id: tokenId,
           metadata: JSON.stringify(metadata),

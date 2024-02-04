@@ -30,7 +30,7 @@
     "asbuild": "asc src/build/index.ts --config src/asconfig.json --use abort= --target release",
     "precompile": "koinos-precompiler-as src",
     "build": "yarn precompile && yarn asbuild",
-    "deploy": "ts-node scripts/deployment.ts",
+    "deploy": "ts-node scripts/deploy.ts",
     "mint": "ts-node scripts/mint.ts",
     "sell": "ts-node scripts/sell.ts",
     "lint": "eslint --max-warnings 0 --ext ts \"*/assembly/**/*.ts\""
