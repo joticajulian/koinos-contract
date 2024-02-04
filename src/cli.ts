@@ -70,6 +70,7 @@ async function main() {
   updateFiles(
     [
       path.join(projectName, "package.json"),
+      path.join(projectName, "README.md"),
       path.join(projectName, "src/koinos.config.js"),
       path.join(projectName, "src/asconfig.json"),
       path.join(projectName, "src/assembly/Contract.ts"),

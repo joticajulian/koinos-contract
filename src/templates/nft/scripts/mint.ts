@@ -7,8 +7,8 @@ import { Signer, Contract, Provider, Transaction } from "koilib";
 import fs from "fs";
 import * as dotenv from "dotenv";
 import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
-import abi from "../build/___CONTRACT_ABI_FILE___";
-import koinosConfig from "../koinos.config.js";
+import abi from "../src/build/___CONTRACT_ABI_FILE___";
+import koinosConfig from "../src/koinos.config.js";
 
 dotenv.config();
 
