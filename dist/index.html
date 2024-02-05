@@ -17,9 +17,22 @@
       <button @click="connectKondor()">Connect kondor</button>
     </header>
     <div class="card">
-      <div v-for="method in contractMethods" :key="method.name">
-        {{method.name}}
-      </div>
+      {{contractFunctions[1]?.name}}
+      <proto-form 
+        :protobuftypes="{fields:{ju:{type:'string'},li:{type:'string'}}}"
+        :protobuftype="contractFunctions[1]?.protobufType"
+        :serializer="contractFunctions[1]?.serializer"
+      ></proto-form>
+      <!--<div v-for="fn in contractFunctions" :key="fn.name">
+        {{fn.name}}
+        <div class="args">
+          <div v-for="arg in fn.args">
+            <div class="title">{{arg.name}}</div>
+            <input type="text" v-model="arg.value">
+          </div>
+        </div>
+        <button @click="callFunction(fn.args)">Send</button>
+      </div>-->
     </div>
   </div>
   </body>
@@ -32,16 +45,115 @@
     const mkwWalletConnectorUrl =
       "https://mykw.vercel.app/embed/wallet-connector";
     let mkw;
+
+    const nativeTypes = [
+      "double",
+      "float",
+      "int32",
+      "int64",
+      "uint32",
+      "uint64",
+      "sint32",
+      "sint64",
+      "fixed32",
+      "fixed64",
+      "sfixed32",
+      "sfixed64",
+      "bool",
+      "string",
+      "bytes",
+    ];
+
+    const ProtoForm = {
+      template: `
+        <div class="args">
+          <div v-for="arg in ar">
+            <div v-if="arg.nested"> nested here
+              <proto-form 
+                :protobuftype="arg.protobufType"
+                :serializer="serializer"
+              ></proto-form>
+            </div>
+            <div v-else>
+              <div class="title">{{arg.name}}</div>
+              <input type="text" v-model="arg.value">
+            </div>
+          </div>
+        </div>
+      `,
+
+      props: {
+        protobuftype: {
+          type: Object,
+          required: true,
+        },
+        serializer: {
+          type: Object,
+          required: true,
+        }
+      },
+
+      mounted() {
+        console.log("mounted!!");
+        this.calc(this.protobuftype);
+      },
+
+      watch: {
+        protobuftype: function(val) {
+          this.calc(val);
+        }
+      },
+
+      methods: {
+        calc(val) {console.log("calc");
+          console.log(val);
+          if (!val || !val.fields) {
+            this.ar = [{
+              name: "no data",
+              value: "",
+            }];
+            return;
+          }
+          this.ar = Object.keys(val.fields).map(f => {
+            const { type } = val.fields[f];
+            const nested = !nativeTypes.includes(type);
+            let protobufType;
+            if (nested) {
+              protobufType = this.serializer.root.lookupTypeOrEnum(type);
+              console.log("nesteddd");
+              console.log(protobufType.fields);
+            }
+            return {
+              name: f,
+              value: "",
+              type: val.fields[f].type,
+              nested,
+              protobufType,
+            };
+          });
+        },
+      },
+      
+      data() {
+        return {
+          ar: null
+        };
+      },
+    };
     
-    createApp({
+    const app = createApp({
       data() {
         return {
           accounts: null,
           contract: null,
-          contractMethods: [],
+          contractFunctions: [],
           inputContractId: "",
         };
       },
+
+      /*components: {
+        ProtoForm,
+      },*/
 
       watch: {
         inputContractId: function (val) {
@@ -50,6 +162,7 @@
       },
 
       mounted() {
+        this.inputContractId = "1EwJUW4BFbA4EGmSyB9bgdhB3gk2f3shRN";
         // mkw = new MyKoinosWallet(mkwWalletConnectorUrl);
         // mkw.connect();
       },
@@ -73,14 +186,32 @@
           });
           await this.contract.fetchAbi();
 
-          this.contractMethods = Object.keys(this.contract.abi.methods).map(m => {
+          this.contractFunctions = Object.keys(this.contract.abi.methods).map(m => {
+            let argType = this.contract.abi.methods[m].argument;
+            let args = [];
+            let protobufType;
+            if (argType) {
+              protobufType = this.contract.serializer.root.lookupType(argType);
+              args = Object.keys(protobufType.fields).map(f => {
+                return {
+                  name: f,
+                  value: "",
+                };
+              });
+            }
             return {
               name: m,
+              protobufType,
+              serializer: this.contract.serializer,
               readOnly: this.contract.abi.methods[m].read_only,
             }
-          });
+          }).filter(f => f.readOnly === false);
         },
       },
-    }).mount("#app");
+    });
+
+    app.component("ProtoForm", ProtoForm);
+    
+    app.mount("#app");
   </script>
 </html>
