@@ -1,5 +1,5 @@
 {
-  "name": "koinos-contract",
+  "name": "create-koinos-contract",
   "version": "1.0.0-alpha.0",
   "description": "CLI tool to bootstrap a koinos contract",
   "author": "Julian Gonzalez",
