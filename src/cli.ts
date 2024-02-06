@@ -34,7 +34,7 @@ async function main() {
       type: "list",
       name: "template",
       message: "Template:",
-      choices: ["Token Contract", "NFT Contract", "Hello World"],
+      choices: ["NFT Contract"],
     } as unknown as Question);
   }
 
