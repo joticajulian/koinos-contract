@@ -66,7 +66,7 @@ async function main() {
   const abiFile = `${contractClass.toLowerCase()}-abi.json`;
 
   const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-  const sourceDir = path.join(__dirname, "templates/nft");
+  const sourceDir = path.join(__dirname, "../templates/nft");
   fse.copySync(sourceDir, projectName);
 
   updateFiles(

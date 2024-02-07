@@ -19,5 +19,5 @@
     "outDir": "lib"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/templates"],
+  "exclude": ["templates"]
 }

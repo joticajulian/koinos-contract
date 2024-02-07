@@ -34,7 +34,7 @@ async function main() {
   const provider = new Provider(network.rpcNodes);
 
   const contractAccount = Signer.fromWif(
-    network.accounts.contract.privateKeyWif
+    network.accounts.contract.privateKeyWif,
   );
   contractAccount.provider = provider;
 
@@ -54,7 +54,7 @@ async function main() {
     };
   } else {
     const manaSharer = Signer.fromWif(
-      network.accounts.manaSharer.privateKeyWif
+      network.accounts.manaSharer.privateKeyWif,
     );
     manaSharer.provider = provider;
     txOptions = {
@@ -90,7 +90,7 @@ async function main() {
       if (writeMetadata) {
         const metadata = fs.readFileSync(
           path.join(__dirname, `metadata/${i}.json`),
-          "utf8"
+          "utf8",
         );
         await tx.pushOperation(contract.functions.set_metadata, {
           token_id: tokenId,
@@ -103,7 +103,7 @@ async function main() {
     const receipt = await tx.send();
     console.log(`Transaction submitted: from ${nextNFT} to ${i - 1}`);
     console.log(
-      `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`
+      `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`,
     );
     const { blockNumber } = await tx.wait("byBlock", 60000);
     console.log(`mined in block ${blockNumber} (${networkName})`);
@@ -111,7 +111,7 @@ async function main() {
   }
 
   console.log(
-    `NFTs minted for contract ${contractAccount.address} (${networkName})`
+    `NFTs minted for contract ${contractAccount.address} (${networkName})`,
   );
 }
 

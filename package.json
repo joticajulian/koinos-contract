@@ -1,6 +1,6 @@
 {
   "name": "create-koinos-contract",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.0-alpha.7",
   "description": "CLI tool to bootstrap a koinos contract",
   "author": "Julian Gonzalez",
   "type": "module",
@@ -13,7 +13,8 @@
   },
   "files": [
     "bin",
-    "lib"
+    "lib",
+    "templates"
   ],
   "main": "./lib/index.js",
   "bin": {

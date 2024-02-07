@@ -48,12 +48,12 @@ async function main() {
     throw new Error(
       `invalid marketplace. It should be ${marketPlaces
         .map((m) => m.name)
-        .join(" or ")}. Received '${inputMarketPlace}'`
+        .join(" or ")}. Received '${inputMarketPlace}'`,
     );
   const provider = new Provider(network.rpcNodes);
 
   const contractAccount = Signer.fromWif(
-    network.accounts.contract.privateKeyWif
+    network.accounts.contract.privateKeyWif,
   );
   contractAccount.provider = provider;
 
@@ -79,7 +79,7 @@ async function main() {
     };
   } else {
     const manaSharer = Signer.fromWif(
-      network.accounts.manaSharer.privateKeyWif
+      network.accounts.manaSharer.privateKeyWif,
     );
     manaSharer.provider = provider;
     txOptions = {
@@ -141,7 +141,7 @@ async function main() {
       const receipt = await tx.send();
       console.log(`Transaction submitted: from ${nextNFT} to ${i - 1}`);
       console.log(
-        `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`
+        `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`,
       );
       const { blockNumber } = await tx.wait("byBlock", 60000);
       console.log(`mined in block ${blockNumber} (${networkName})`);
@@ -150,7 +150,7 @@ async function main() {
   }
 
   console.log(
-    `Sell orders placed for collection ${contractAccount.address} (${networkName})`
+    `Sell orders placed for collection ${contractAccount.address} (${networkName})`,
   );
 }
 

@@ -5,7 +5,7 @@ export function toPascalCase(string: string) {
     .replace(new RegExp(/[^\w\s]/, "g"), "")
     .replace(
       new RegExp(/\s+(.)(\w*)/, "g"),
-      (_, $2, $3) => `${$2.toUpperCase() + $3}`
+      (_, $2, $3) => `${$2.toUpperCase() + $3}`,
     )
     .replace(new RegExp(/\w/), (s) => s.toUpperCase());
 }
