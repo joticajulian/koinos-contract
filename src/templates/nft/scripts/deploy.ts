@@ -23,7 +23,7 @@ async function main() {
   const provider = new Provider(network.rpcNodes);
 
   const contractAccount = Signer.fromWif(
-    network.accounts.contract.privateKeyWif
+    network.accounts.contract.privateKeyWif,
   );
   contractAccount.provider = provider;
 
@@ -37,7 +37,7 @@ async function main() {
     };
   } else {
     const manaSharer = Signer.fromWif(
-      network.accounts.manaSharer.privateKeyWif
+      network.accounts.manaSharer.privateKeyWif,
     );
     manaSharer.provider = provider;
     txOptions = {
@@ -65,7 +65,7 @@ async function main() {
       },
       {
         onlyOperation: true,
-      }
+      },
     );
 
   const { receipt, transaction } = await contract.deploy({
@@ -74,11 +74,11 @@ async function main() {
   });
   console.log("Transaction submitted");
   console.log(
-    `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`
+    `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`,
   );
   const { blockNumber } = await transaction.wait("byBlock", 60000);
   console.log(
-    `Contract ${contractAccount.address} uploaded in block number ${blockNumber} (${networkName})`
+    `Contract ${contractAccount.address} uploaded in block number ${blockNumber} (${networkName})`,
   );
 }
 

@@ -85,17 +85,17 @@ async function main() {
       ["___CONTRACT_CLASS___", contractClass],
       ["___PROJECT_NAME___", projectName],
       ["___CONTRACT_ABI_FILE___", abiFile],
-    ]
+    ],
   );
 
   fs.renameSync(
     path.join(projectName, "src/assembly/Contract.ts"),
-    path.join(projectName, "src/assembly", `${contractClass}.ts`)
+    path.join(projectName, "src/assembly", `${contractClass}.ts`),
   );
 
   fs.renameSync(
     path.join(projectName, ".env.example"),
-    path.join(projectName, ".env")
+    path.join(projectName, ".env"),
   );
 }
 
