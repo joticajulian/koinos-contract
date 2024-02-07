@@ -15,7 +15,7 @@
     "declaration": false,
     "skipLibCheck": true,
     "target": "ES2019",
-    "module": "CommonJS",
+    "module": "ES2015",
     "outDir": "lib"
   },
   "include": ["src/**/*.ts"],

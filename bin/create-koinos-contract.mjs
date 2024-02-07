@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
-const { spawn } = require("child_process");
+import { spawn } from "child_process";
+import { createRequire } from "node:module";
 
+const require = createRequire(import.meta.url);
 const args = [require.resolve("../lib/cli"), ...process.argv.slice(2)];
 
 const spawned = spawn("node", args, {

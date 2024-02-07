@@ -3,7 +3,7 @@ import inquirer, { Question } from "inquirer";
 import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
-import toPascalCase from "./utils";
+import toPascalCase from "./utils.js";
 
 function updateFiles(filenames: string[], changes: string[][]) {
   filenames.forEach((filename) => {
