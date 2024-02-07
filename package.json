@@ -1,6 +1,6 @@
 {
   "name": "create-koinos-contract",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "CLI tool to bootstrap a koinos contract",
   "author": "Julian Gonzalez",
   "repository": {
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@tsconfig/node12": "^1.0.9",
     "@types/fs-extra": "^9.0.13",
-    "@types/inquirer": "^9.0.7",
+    "@types/inquirer": "^8.0.0",
     "@types/node": "^17.0.10",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
