@@ -27,26 +27,6 @@
         ></proto-form>
         <button @click="callFunction(i)">Send</button>
       </div>
-      
-      <!--{{contractFunctions[1]?.name}}
-      <proto-form 
-        :protobuftype="contractFunctions[1]?.protobufType"
-        :serializer="contractFunctions[1]?.serializer"
-        reference="protoMessage"
-        ref="protoMessage"
-      ></proto-form>-->
-      
-      
-      <!--<div v-for="fn in contractFunctions" :key="fn.name">
-        {{fn.name}}
-        <div class="args">
-          <div v-for="arg in fn.args">
-            <div class="title">{{arg.name}}</div>
-            <input type="text" v-model="arg.value">
-          </div>
-        </div>
-      </div>-->
-      <!--<button @click="callFunction()">Send</button>-->
     </div>
   </div>
   </body>
@@ -54,213 +34,14 @@
   <script src="js/koinos.min.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script type="module">
+    import { ProtoForm } from "./js/protoForm.js";
+
     const { createApp } = Vue;
     let defaultKoinosProvider = "https://api.koinos.io";
     const mkwWalletConnectorUrl =
       "https://mykw.vercel.app/embed/wallet-connector";
     let mkw;
 
-    const nativeTypes = [
-      "double",
-      "float",
-      "int32",
-      "int64",
-      "uint32",
-      "uint64",
-      "sint32",
-      "sint64",
-      "fixed32",
-      "fixed64",
-      "sfixed32",
-      "sfixed64",
-      "bool",
-      "string",
-      "bytes",
-    ];
-
-    function buildInitialInputValues(serializer, _type, _nested, _repeated) {
-      if (_repeated) {
-        if (_nested) {
-          const protobufType = serializer.root.lookupTypeOrEnum(_type);
-          const nestedArgs = Object.keys(protobufType.fields).map(f => {
-            const { options, name, type, rule } = protobufType.fields[f];
-            const nested = !nativeTypes.includes(type);
-            return buildInitialInputValues(serializer, type, nested, false);
-          });
-          // build 1 element
-          return [nestedArgs];
-        }
-        return [""];
-      }
-      
-      if (_nested) {
-        const protobufType = serializer.root.lookupTypeOrEnum(_type);
-        const nestedArgs = Object.keys(protobufType.fields).map(f => {
-          const { options, name, type, rule } = protobufType.fields[f];
-          const nested = !nativeTypes.includes(type);
-          const repeated = rule === "repeated";
-          return buildInitialInputValues(serializer, type, nested, repeated);
-        });
-        return nestedArgs;
-      }
-      
-      return "";
-    }
-
-    const ProtoForm = {
-      template: `
-        <div class="args">
-          <div v-for="arg in args">arg: {{arg.name}}
-            <div v-if="arg.repeated">
-              <div v-for="value in arg.value">
-                <div v-if="arg.nested">
-                  <proto-form 
-                    :protobuftype="arg.protobufType"
-                    :serializer="serializer"
-                    :norepeated="true"
-                    :reference="reference+'child-for'"
-                    :ref="reference+'child-for'"
-                  ></proto-form>
-                </div>
-                <div v-else>
-                  <div class="title">item in for</div>
-                  <input type="text" v-model="value">
-                </div>
-              </div>
-              <div>
-                <button @click="addElement(arg)">Add</button>
-                <button @click="removeElement(arg)">Remove</button>
-              </div>
-            </div>
-            <div v-else-if="arg.nested"> nested here
-              <proto-form 
-                :protobuftype="arg.protobufType"
-                :serializer="serializer"
-                :reference="reference+'child'"
-                :ref="reference+'child'"
-              ></proto-form>
-            </div>
-            <div v-else>
-              <div class="title">{{arg.name}}</div>
-              <input type="text" v-model="arg.value">
-            </div>
-          </div>
-        </div>
-      `,
-
-      props: {
-        protobuftype: {
-          type: Object,
-          required: true,
-        },
-        serializer: {
-          type: Object,
-          required: true,
-        },
-        norepeated: {
-          type: Boolean,
-          required: false,
-        },
-        reference: {
-          type: String,
-          required: true,
-        }
-      },
-
-      data() {
-        return {
-          args: null,
-          totalElements: 0,
-        };
-      },
-
-      mounted() {
-        this.calc(this.protobuftype);
-      },
-
-      watch: {
-        protobuftype: function(val) {
-          this.calc(val);
-        }
-      },
-
-      methods: {
-        calc(val) {
-          if (!val || !val.fields) {
-            this.args = [{
-              name: "no data",
-              value: "",
-            }];
-            return;
-          }
-          this.args = Object.keys(val.fields).map(f => {
-            const { options, name, type, rule } = val.fields[f];
-            const nested = !nativeTypes.includes(type);
-            const repeated = rule === "repeated" && !this.norepeated;
-
-            let protobufType;
-            if (nested) {
-              protobufType = this.serializer.root.lookupTypeOrEnum(type);
-            }
-
-            const value = buildInitialInputValues(
-              this.serializer,
-              type,
-              nested,
-              repeated,
-            );
-
-            return {
-              name: f,
-              value,
-              type: val.fields[f].type,
-              typeField: { type },
-              nested,
-              repeated,
-              protobufType,
-            };
-          });
-        },
-
-        addElement(arg) {
-          const newValue = buildInitialInputValues(
-            this.serializer,
-            arg.type,
-            arg.nested,
-            arg.repeated,
-          );
-          arg.value.push(newValue);
-        },
-
-        removeElement(arg) {
-          arg.value.pop();
-        },
-
-        getArgs() {
-          const a = {};
-          this.args.forEach((arg) => {
-            if (arg.repeated) {
-              a[arg.name] = [];
-              if (arg.nested) {
-                const nestedArgs = this.$refs[`${this.reference}child-for`].map(r => {
-                  return r.getArgs();
-                });
-                a[arg.name] = nestedArgs;
-              } else {
-                a[arg.name].push("not implemented");
-              }
-            } else if (arg.nested) {
-              const nestedArg = this.$refs[`${this.reference}child`].getArgs();
-              a[arg.name] = nestedArg;
-            } else {
-              a[arg.name] = arg.value;
-            }
-          });
-          return a;
-        }
-      },
-    };
-    
     const app = createApp({
       data() {
         return {
@@ -270,10 +51,6 @@
           inputContractId: "",
         };
       },
-
-      /*components: {
-        ProtoForm,
-      },*/
 
       watch: {
         inputContractId: function (val) {
@@ -308,17 +85,10 @@
 
           this.contractFunctions = Object.keys(this.contract.abi.methods).map(m => {
             let argType = this.contract.abi.methods[m].argument;
-            let args = [];
-            let protobufType;
-            if (argType) {
-              protobufType = this.contract.serializer.root.lookupType(argType);
-              args = Object.keys(protobufType.fields).map(f => {
-                return {
-                  name: f,
-                  value: "",
-                };
-              });
-            }
+            const protobufType = argType
+              ? this.contract.serializer.root.lookupType(argType)
+              : undefined;
+
             return {
               name: m,
               protobufType,
