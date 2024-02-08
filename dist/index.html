@@ -17,12 +17,26 @@
       <button @click="connectKondor()">Connect kondor</button>
     </header>
     <div class="card">
-      {{contractFunctions[1]?.name}}
+      <div v-for="(fn, i) in contractFunctions" :key="fn.name">
+        {{fn.name}}
+        <proto-form 
+          :protobuftype="fn.protobufType"
+          :serializer="fn.serializer"
+          reference="protoMessage"
+          ref="protoMessage"
+        ></proto-form>
+        <button @click="callFunction(i)">Send</button>
+      </div>
+      
+      <!--{{contractFunctions[1]?.name}}
       <proto-form 
-        :protobuftypes="{fields:{ju:{type:'string'},li:{type:'string'}}}"
         :protobuftype="contractFunctions[1]?.protobufType"
         :serializer="contractFunctions[1]?.serializer"
-      ></proto-form>
+        reference="protoMessage"
+        ref="protoMessage"
+      ></proto-form>-->
+      
+      
       <!--<div v-for="fn in contractFunctions" :key="fn.name">
         {{fn.name}}
         <div class="args">
@@ -31,8 +45,8 @@
             <input type="text" v-model="arg.value">
           </div>
         </div>
-        <button @click="callFunction(fn.args)">Send</button>
       </div>-->
+      <!--<button @click="callFunction()">Send</button>-->
     </div>
   </div>
   </body>
@@ -64,27 +78,66 @@
       "bytes",
     ];
 
+    function buildInitialInputValues(serializer, _type, _nested, _repeated) {
+      if (_repeated) {
+        if (_nested) {
+          const protobufType = serializer.root.lookupTypeOrEnum(_type);
+          const nestedArgs = Object.keys(protobufType.fields).map(f => {
+            const { options, name, type, rule } = protobufType.fields[f];
+            const nested = !nativeTypes.includes(type);
+            return buildInitialInputValues(serializer, type, nested, false);
+          });
+          // build 1 element
+          return [nestedArgs];
+        }
+        return [""];
+      }
+      
+      if (_nested) {
+        const protobufType = serializer.root.lookupTypeOrEnum(_type);
+        const nestedArgs = Object.keys(protobufType.fields).map(f => {
+          const { options, name, type, rule } = protobufType.fields[f];
+          const nested = !nativeTypes.includes(type);
+          const repeated = rule === "repeated";
+          return buildInitialInputValues(serializer, type, nested, repeated);
+        });
+        return nestedArgs;
+      }
+      
+      return "";
+    }
+
     const ProtoForm = {
       template: `
         <div class="args">
-          <div v-for="arg in args">
+          <div v-for="arg in args">arg: {{arg.name}}
             <div v-if="arg.repeated">
-              <div> here v-for
+              <div v-for="value in arg.value">
                 <div v-if="arg.nested">
                   <proto-form 
-                    :protobuftype="arg.typeField"
+                    :protobuftype="arg.protobufType"
                     :serializer="serializer"
+                    :norepeated="true"
+                    :reference="reference+'child-for'"
+                    :ref="reference+'child-for'"
                   ></proto-form>
                 </div>
                 <div v-else>
+                  <div class="title">item in for</div>
+                  <input type="text" v-model="value">
                 </div>
               </div>
-              button to add and remove elements
+              <div>
+                <button @click="addElement(arg)">Add</button>
+                <button @click="removeElement(arg)">Remove</button>
+              </div>
             </div>
-            <div v-elif="arg.nested"> nested here
+            <div v-else-if="arg.nested"> nested here
               <proto-form 
                 :protobuftype="arg.protobufType"
                 :serializer="serializer"
+                :reference="reference+'child'"
+                :ref="reference+'child'"
               ></proto-form>
             </div>
             <div v-else>
@@ -103,17 +156,25 @@
         serializer: {
           type: Object,
           required: true,
+        },
+        norepeated: {
+          type: Boolean,
+          required: false,
+        },
+        reference: {
+          type: String,
+          required: true,
         }
       },
 
       data() {
         return {
-          args: null
+          args: null,
+          totalElements: 0,
         };
       },
 
       mounted() {
-        console.log("mounted!!");
         this.calc(this.protobuftype);
       },
 
@@ -124,8 +185,7 @@
       },
 
       methods: {
-        calc(val) {console.log("calc");
-          console.log(val);
+        calc(val) {
           if (!val || !val.fields) {
             this.args = [{
               name: "no data",
@@ -136,17 +196,23 @@
           this.args = Object.keys(val.fields).map(f => {
             const { options, name, type, rule } = val.fields[f];
             const nested = !nativeTypes.includes(type);
-            const repeated = rule === "repeated";
+            const repeated = rule === "repeated" && !this.norepeated;
 
             let protobufType;
             if (nested) {
               protobufType = this.serializer.root.lookupTypeOrEnum(type);
-              console.log("nesteddd");
-              console.log(protobufType.fields);
             }
+
+            const value = buildInitialInputValues(
+              this.serializer,
+              type,
+              nested,
+              repeated,
+            );
+
             return {
               name: f,
-              value: "",
+              value,
               type: val.fields[f].type,
               typeField: { type },
               nested,
@@ -155,6 +221,43 @@
             };
           });
         },
+
+        addElement(arg) {
+          const newValue = buildInitialInputValues(
+            this.serializer,
+            arg.type,
+            arg.nested,
+            arg.repeated,
+          );
+          arg.value.push(newValue);
+        },
+
+        removeElement(arg) {
+          arg.value.pop();
+        },
+
+        getArgs() {
+          const a = {};
+          this.args.forEach((arg) => {
+            if (arg.repeated) {
+              a[arg.name] = [];
+              if (arg.nested) {
+                const nestedArgs = this.$refs[`${this.reference}child-for`].map(r => {
+                  return r.getArgs();
+                });
+                a[arg.name] = nestedArgs;
+              } else {
+                a[arg.name].push("not implemented");
+              }
+            } else if (arg.nested) {
+              const nestedArg = this.$refs[`${this.reference}child`].getArgs();
+              a[arg.name] = nestedArg;
+            } else {
+              a[arg.name] = arg.value;
+            }
+          });
+          return a;
+        }
       },
     };
     
@@ -224,6 +327,12 @@
             }
           }).filter(f => f.readOnly === false);
         },
+
+        callFunction(i) {
+          const args = this.$refs.protoMessage[i].getArgs();
+          console.log(this.contractFunctions[i].name.toUpperCase());
+          console.log(args);
+        }
       },
     });
 
