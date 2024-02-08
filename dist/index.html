@@ -1,40 +1,43 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Koinos Contract</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="./style.css">
-  <title>Koinos Contract</title>
-</head>
-
-<body>
-  <div id="app">
-    <header>
-      <h1>Contract</h1>
-      <input type="text" v-model="inputContractId" placeholder="Contract ID"/>
-      <button @click="connectKondor()">Connect kondor</button>
-    </header>
-    <div class="card">
-      <div v-for="(fn, i) in contractFunctions" :key="fn.name">
-        {{fn.name}}
-        <proto-form 
-          :protobuftype="fn.protobufType"
-          :serializer="fn.serializer"
-          reference="protoMessage"
-          ref="protoMessage"
-        ></proto-form>
-        <button @click="callFunction(i)">Send</button>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Contract</h1>
+        <input
+          type="text"
+          v-model="inputContractId"
+          placeholder="Contract ID"
+        />
+        <button @click="connectKondor()">Connect kondor</button>
+      </header>
+      <div class="card">
+        <div v-for="(fn, i) in contractFunctions" :key="fn.name">
+          {{fn.prettyName}}
+          <proto-form
+            :protobuftype="fn.protobufType"
+            :serializer="fn.serializer"
+            reference="protoMessage"
+            ref="protoMessage"
+          ></proto-form>
+          <button @click="callFunction(i)">Send</button>
+        </div>
       </div>
     </div>
-  </div>
   </body>
   <script src="js/kondor.min.js"></script>
   <script src="js/koinos.min.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script type="module">
-    import { ProtoForm } from "./js/protoForm.js";
+    import { ProtoForm, prettyName } from "./js/protoForm.js";
 
     const { createApp } = Vue;
     let defaultKoinosProvider = "https://api.koinos.io";
@@ -83,31 +86,34 @@
           });
           await this.contract.fetchAbi();
 
-          this.contractFunctions = Object.keys(this.contract.abi.methods).map(m => {
-            let argType = this.contract.abi.methods[m].argument;
-            const protobufType = argType
-              ? this.contract.serializer.root.lookupType(argType)
-              : undefined;
+          this.contractFunctions = Object.keys(this.contract.abi.methods)
+            .map((name) => {
+              const { argument } = this.contract.abi.methods[name];
+              const protobufType = argument
+                ? this.contract.serializer.root.lookupType(argument)
+                : undefined;
 
-            return {
-              name: m,
-              protobufType,
-              serializer: this.contract.serializer,
-              readOnly: this.contract.abi.methods[m].read_only,
-            }
-          }).filter(f => f.readOnly === false);
+              return {
+                name,
+                prettyName: prettyName(name),
+                protobufType,
+                serializer: this.contract.serializer,
+                readOnly: this.contract.abi.methods[name].read_only,
+              };
+            })
+            .filter((f) => f.readOnly === false);
         },
 
         callFunction(i) {
           const args = this.$refs.protoMessage[i].getArgs();
           console.log(this.contractFunctions[i].name.toUpperCase());
           console.log(args);
-        }
+        },
       },
     });
 
     app.component("ProtoForm", ProtoForm);
-    
+
     app.mount("#app");
   </script>
 </html>
