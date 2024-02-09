@@ -29,6 +29,7 @@ function buildInitialInputValues(serializer, _type, _nested, _repeated) {
   if (_repeated) {
     if (_nested) {
       const protobufType = serializer.root.lookupTypeOrEnum(_type);
+      if (!protobufType.fields) return "";
       const nestedArgs = Object.keys(protobufType.fields).map((f) => {
         const { type } = protobufType.fields[f];
         const nested = !nativeTypes.includes(type);
@@ -42,6 +43,7 @@ function buildInitialInputValues(serializer, _type, _nested, _repeated) {
 
   if (_nested) {
     const protobufType = serializer.root.lookupTypeOrEnum(_type);
+    if (!protobufType.fields) return "";
     const nestedArgs = Object.keys(protobufType.fields).map((f) => {
       const { type, rule } = protobufType.fields[f];
       const nested = !nativeTypes.includes(type);
@@ -66,7 +68,7 @@ export const ProtoForm = {
               <div class="item-number">
                 #{{i+1}}
               </div>
-              <div v-if="arg.nested">
+              <div v-if="arg.nested && !arg.isEnum">
                 <proto-form 
                   :protobuftype="arg.protobufType"
                   :serializer="serializer"
@@ -74,6 +76,9 @@ export const ProtoForm = {
                   :reference="reference+'child-for'"
                   :ref="reference+'child-for'"
                 ></proto-form>
+              </div>
+              <div v-else-if="arg.nested && arg.isEnum">
+                is enum check console
               </div>
               <div v-else>
                 <input type="text" v-model="value">
@@ -84,13 +89,16 @@ export const ProtoForm = {
               <button @click="removeElement(arg)">Remove</button>
             </div>
           </div>
-          <div v-else-if="arg.nested">
+          <div v-else-if="arg.nested && !arg.isEnum">
             <proto-form 
               :protobuftype="arg.protobufType"
               :serializer="serializer"
               :reference="reference+'child'"
               :ref="reference+'child'"
             ></proto-form>
+          </div>
+          <div v-else-if="arg.nested && arg.isEnum">
+            is enum check console
           </div>
           <div v-else>
             <input type="text" v-model="arg.value">
@@ -152,8 +160,14 @@ export const ProtoForm = {
         const repeated = rule === "repeated" && !this.norepeated;
 
         let protobufType;
+        let isEnum = false;
         if (nested) {
           protobufType = this.serializer.root.lookupTypeOrEnum(type);
+          if (!protobufType.fields) {
+            isEnum = true;
+            console.log("is enum");
+            console.log(JSON.stringify(protobufType, null, 2));
+          }
         }
 
         const value = buildInitialInputValues(
@@ -168,6 +182,7 @@ export const ProtoForm = {
           prettyName: prettyName(name),
           value,
           type,
+          isEnum,
           nested,
           repeated,
           protobufType,

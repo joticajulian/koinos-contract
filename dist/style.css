@@ -27,28 +27,71 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   align-items: flex-start;
+  box-sizing: border-box;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  margin: 0;
 }
 
 #app {
   /* max-width: 600px; */
-  margin: 0 auto;
-  padding: 2rem;
+  /* margin: 0 auto; */
+  /* padding: 2rem; */
+  width: 100%;
+  height: 100vh;
   /* text-align: center; */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* justify-content: space-between; */
 }
 
-.card {
-  padding: 2em;
-  margin-bottom: 3em;
+#header {
+  height: 20vh;
+}
+
+.container {
+  /* padding: 2em; */
+  /* margin-bottom: 3em; */
+  display: flex;
+  height: 80vh;
+  box-sizing: border-box;
+}
+
+.menu {
+  background: #80a8ff;
+  padding: 1em;
+  width: 30%;
+  max-width: 20em;
+  max-height: 50em;
+  height: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+
+.menu button {
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.fn-data {
+  padding: 1em;
+  width: 70%;
+  height: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+
+.fn-data h2 {
+  margin-top: 0;
+}
+
+.fn-description {
+  margin-bottom: 1.5em;
 }
 
 button {
@@ -116,7 +159,8 @@ input {
   margin-bottom: 0.5em;
 }
 
-.arg {}
+.arg {
+}
 
 .item {
   margin-bottom: 1em;

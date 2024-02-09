@@ -10,7 +10,7 @@
 
   <body>
     <div id="app">
-      <header>
+      <div id="header">
         <h1>Contract</h1>
         <input
           type="text"
@@ -18,17 +18,24 @@
           placeholder="Contract ID"
         />
         <button @click="connectKondor()">Connect kondor</button>
-      </header>
-      <div class="card">
-        <div v-for="(fn, i) in contractFunctions" :key="fn.name">
-          {{fn.prettyName}}
+      </div>
+      <div class="container">
+        <div class="menu">
+          <div v-for="fn in contractFunctions" :key="fn.name">
+            <button @click="openFunction(fn.name)">{{fn.prettyName}}</button>
+          </div>
+        </div>
+        <div class="fn-data">
+          <h2>{{contractFunction?.prettyName}}</h2>
+          <div class="fn-description">{{contractFunction?.description}}</div>
           <proto-form
-            :protobuftype="fn.protobufType"
-            :serializer="fn.serializer"
+            v-if="contractFunction"
+            :protobuftype="contractFunction.protobufType"
+            :serializer="contract.serializer"
             reference="protoMessage"
             ref="protoMessage"
           ></proto-form>
-          <button @click="callFunction(i)">Send</button>
+          <button @click="callFunction()">Send</button>
         </div>
       </div>
     </div>
@@ -50,8 +57,10 @@
         return {
           accounts: null,
           contract: null,
+          contractFunction: null,
           contractFunctions: [],
           inputContractId: "",
+          i: 0,
         };
       },
 
@@ -86,27 +95,37 @@
           });
           await this.contract.fetchAbi();
 
-          this.contractFunctions = Object.keys(this.contract.abi.methods)
-            .map((name) => {
+          this.contractFunctions = Object.keys(this.contract.abi.methods).map(
+            (name) => {
               const { argument } = this.contract.abi.methods[name];
-              const protobufType = argument
-                ? this.contract.serializer.root.lookupType(argument)
-                : undefined;
 
               return {
                 name,
                 prettyName: prettyName(name),
-                protobufType,
-                serializer: this.contract.serializer,
                 readOnly: this.contract.abi.methods[name].read_only,
               };
-            })
-            .filter((f) => f.readOnly === false);
+            },
+          );
         },
 
-        callFunction(i) {
-          const args = this.$refs.protoMessage[i].getArgs();
-          console.log(this.contractFunctions[i].name.toUpperCase());
+        openFunction(name) {
+          const { argument, description } = this.contract.abi.methods[name];
+          const protobufType = argument
+            ? this.contract.serializer.root.lookupType(argument)
+            : undefined;
+
+          this.contractFunction = {
+            name,
+            prettyName: prettyName(name),
+            description,
+            protobufType,
+            readOnly: this.contract.abi.methods[name].read_only,
+          };
+        },
+
+        callFunction() {
+          const args = this.$refs.protoMessage.getArgs();
+          console.log(this.contractFunction.name.toUpperCase());
           console.log(args);
         },
       },
