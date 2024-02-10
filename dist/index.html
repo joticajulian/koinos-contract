@@ -29,7 +29,7 @@
           <h2>{{contractFunction?.prettyName}}</h2>
           <div class="fn-description">{{contractFunction?.description}}</div>
           <proto-form
-            v-if="contractFunction"
+            v-if="contractFunction && contractFunction.protobufType"
             :protobuftype="contractFunction.protobufType"
             :serializer="contract.serializer"
             reference="protoMessage"
@@ -97,8 +97,6 @@
 
           this.contractFunctions = Object.keys(this.contract.abi.methods).map(
             (name) => {
-              const { argument } = this.contract.abi.methods[name];
-
               return {
                 name,
                 prettyName: prettyName(name),
@@ -124,8 +122,12 @@
         },
 
         callFunction() {
-          const args = this.$refs.protoMessage.getArgs();
           console.log(this.contractFunction.name.toUpperCase());
+          if (!this.contractFunction || !this.contractFunction.protobufType) {
+            console.log("");
+            return "";
+          }
+          const args = this.$refs.protoMessage.getArgs();
           console.log(args);
         },
       },

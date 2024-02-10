@@ -78,7 +78,10 @@ export const ProtoForm = {
                 ></proto-form>
               </div>
               <div v-else-if="arg.nested && arg.isEnum">
-                is enum check console
+                <div v-for="en in arg.enums" class="form-radio">
+                  <input type="radio" :value="en.value" v-model="arg.value"/>
+                  <label>{{en.name}}</label>
+                </div>
               </div>
               <div v-else>
                 <input type="text" v-model="value">
@@ -98,7 +101,10 @@ export const ProtoForm = {
             ></proto-form>
           </div>
           <div v-else-if="arg.nested && arg.isEnum">
-            is enum check console
+            <div v-for="en in arg.enums" class="form-radio">
+              <input type="radio" :value="en.value" v-model="arg.value"/>
+              <label>{{en.name}}</label>
+            </div>
           </div>
           <div v-else>
             <input type="text" v-model="arg.value">
@@ -161,12 +167,17 @@ export const ProtoForm = {
 
         let protobufType;
         let isEnum = false;
+        let enums = [];
         if (nested) {
           protobufType = this.serializer.root.lookupTypeOrEnum(type);
           if (!protobufType.fields) {
             isEnum = true;
-            console.log("is enum");
-            console.log(JSON.stringify(protobufType, null, 2));
+            enums = Object.keys(protobufType.values).map(v => {
+              return {
+                name: v,
+                value: protobufType.values[v],
+              };
+            });
           }
         }
 
@@ -183,6 +194,7 @@ export const ProtoForm = {
           value,
           type,
           isEnum,
+          enums,
           nested,
           repeated,
           protobufType,
@@ -209,10 +221,10 @@ export const ProtoForm = {
       const finalArgs = {};
 
       this.args.forEach((arg) => {
-        const { name, value, repeated, nested } = arg;
+        const { name, value, repeated, nested, isEnum } = arg;
         if (repeated) {
           finalArgs[name] = [];
-          if (nested) {
+          if (nested && !isEnum) {
             const nestedArgs = this.$refs[`${this.reference}child-for`].map(
               (r) => {
                 return r.getArgs();
@@ -222,12 +234,22 @@ export const ProtoForm = {
             return;
           }
 
+          if (nested && isEnum) {
+            finalArgs[name] = value;
+            return;
+          }
+
           finalArgs[name].push("not implemented");
           return;
         }
 
-        if (nested) {
+        if (nested && !isEnum) {
           finalArgs[name] = this.$refs[`${this.reference}child`].getArgs();
+          return;
+        }
+
+        if (nested && isEnum) {
+          finalArgs[name] = value;
           return;
         }
 
