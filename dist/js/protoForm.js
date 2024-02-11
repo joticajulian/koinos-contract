@@ -172,7 +172,7 @@ export const ProtoForm = {
           protobufType = this.serializer.root.lookupTypeOrEnum(type);
           if (!protobufType.fields) {
             isEnum = true;
-            enums = Object.keys(protobufType.values).map(v => {
+            enums = Object.keys(protobufType.values).map((v) => {
               return {
                 name: v,
                 value: protobufType.values[v],

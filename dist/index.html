@@ -36,6 +36,12 @@
             ref="protoMessage"
           ></proto-form>
           <button @click="callFunction()">Send</button>
+          <div
+            class="results"
+            v-if="contractFunction && contractFunction.readOnly"
+          >
+            {{results}}
+          </div>
         </div>
       </div>
     </div>
@@ -60,7 +66,7 @@
           contractFunction: null,
           contractFunctions: [],
           inputContractId: "",
-          i: 0,
+          results: JSON.stringify({ value: 123 }, null, 2),
         };
       },
 

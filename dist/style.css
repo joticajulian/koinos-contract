@@ -4,7 +4,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color: #213547;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,8 +18,9 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
-  color: #535bf2;
+  color: #747bff;
 }
 
 body {
@@ -66,7 +67,7 @@ h1 {
   background: #80a8ff;
   padding: 1em;
   width: 30%;
-  max-width: 20em;
+  /* max-width: 20em; */
   max-height: 50em;
   height: 100%;
   overflow-y: scroll;
@@ -101,7 +102,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #646cff;
+  background-color: #ececec;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -132,44 +133,37 @@ input {
   visibility: visible;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
 .protoform {
   padding: 1em;
-  border: solid black 0.1em;
-  /* border-radius: 15px; */
-  margin: 0;
+  border-radius: 15px;
+  margin: 1em 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  background: #80a8ff;
+  color: white;
 }
 
 .name {
   margin-bottom: 0.5em;
+  margin-right: 0.5em;
+  min-width: 5em;
 }
 
 .arg {
+  display: flex;
+  margin: 0.5em 0;
+  align-items: baseline;
 }
 
 .item {
   margin-bottom: 1em;
+  border: solid black 0.1em;
 }
 
 .item-number {
   display: flex;
   justify-content: end;
-  background: gray;
+  background: black;
   padding-right: 0.5em;
   font-size: 0.8em;
   color: white;
@@ -180,4 +174,46 @@ input {
   font-style: italic;
   color: rgb(231, 76, 76);
   min-height: 2em;
+}
+
+.results {
+  white-space: pre;
+  background-color: #3b3b3b;
+  color: #ffffff;
+  font-family: monospace;
+  padding: 1.5em;
+  border-radius: 8px;
+  margin: 1em 0em;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    box-sizing: unset;
+  }
+
+  #header {
+    height: unset;
+  }
+
+  .container {
+    height: unset;
+    display: unset;
+    box-sizing: unset;
+  }
+
+  .menu {
+    width: 100%;
+    max-width: unset;
+    max-height: unset;
+    height: unset;
+    overflow-y: unset;
+    box-sizing: unset;
+  }
+
+  .fn-data {
+    width: unset;
+    height: unset;
+    overflow-y: unset;
+    box-sizing: unset;
+  }
 }
