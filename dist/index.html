@@ -12,11 +12,6 @@
     <div id="app">
       <div id="header">
         <h1>Contract</h1>
-        <input
-          type="text"
-          v-model="inputContractId"
-          placeholder="Contract ID"
-        />
         <button @click="connectKondor()">Connect kondor</button>
       </div>
       <div class="container">
@@ -35,10 +30,23 @@
             reference="protoMessage"
             ref="protoMessage"
           ></proto-form>
-          <button @click="callFunction()">Send</button>
+          <button
+            v-if="contractFunction && contractFunction.readOnly"
+            @click="callReadFunction()"
+            class="bl"
+          >
+            Read
+            <div v-if="waitingResponse" class="loader"></div>
+          </button>
+          <button
+            v-if="contractFunction && !contractFunction.readOnly"
+            @click="callWriteFunction()"
+          >
+            Send <span v-if="waitingResponse" class="loader"></span>
+          </button>
           <div
             class="results"
-            v-if="contractFunction && contractFunction.readOnly"
+            v-if="results && contractFunction && contractFunction.readOnly"
           >
             {{results}}
           </div>
@@ -66,36 +74,37 @@
           contractFunction: null,
           contractFunctions: [],
           inputContractId: "",
-          results: JSON.stringify({ value: 123 }, null, 2),
+          results: "",
+          waitingResponse: false,
         };
       },
 
-      watch: {
-        inputContractId: function (val) {
-          this.loadContract(val);
-        },
-      },
-
       mounted() {
-        this.inputContractId = "1EwJUW4BFbA4EGmSyB9bgdhB3gk2f3shRN";
+        this.loadContract();
         // mkw = new MyKoinosWallet(mkwWalletConnectorUrl);
         // mkw.connect();
       },
 
       methods: {
+        /**
+         * Connect wallet
+         */
         async connectKondor() {
           console.log("Connecting kondor...");
           this.accounts = await kondor.getAccounts();
           console.log("Kondor connected");
         },
 
-        async loadContract(id) {
+        /**
+         * Load the contract class
+         */
+        async loadContract() {
           //if (!this.accounts) await this.connectKondor();
           const provider = new Provider(["https://api.koinos.io"]);
           //const userAddress = this.accounts[0].address;
 
           this.contract = new Contract({
-            id,
+            id: "1EwJUW4BFbA4EGmSyB9bgdhB3gk2f3shRN",
             provider,
             //signer: kondor.getSigner(userAddress),
           });
@@ -112,6 +121,9 @@
           );
         },
 
+        /**
+         * Load function details in the website
+         */
         openFunction(name) {
           const { argument, description } = this.contract.abi.methods[name];
           const protobufType = argument
@@ -125,16 +137,71 @@
             protobufType,
             readOnly: this.contract.abi.methods[name].read_only,
           };
+          this.results = "";
         },
 
-        callFunction() {
-          console.log(this.contractFunction.name.toUpperCase());
-          if (!this.contractFunction || !this.contractFunction.protobufType) {
-            console.log("");
-            return "";
+        /**
+         * Call read function of the contract
+         */
+        async callReadFunction() {
+          try {
+            this.waitingResponse = true;
+            if (!this.contractFunction) {
+              throw new Error("contractFunction not defined");
+            }
+
+            // get the arguments defined by the user
+            let args = {};
+            if (this.contractFunction.protobufType) {
+              args = this.$refs.protoMessage.getArgs();
+            }
+            console.log(`Calling read function '${functionName}'`);
+            console.log("Arguments:");
+            console.log(args);
+
+            // execute the read function in the blockchain
+            const functionName = this.contractFunction.name;
+            const { result } =
+              await this.contract.functions[functionName](args);
+            this.results = JSON.stringify(result, null, 2);
+            this.waitingResponse = false;
+          } catch (error) {
+            this.results = error.message;
+            this.waitingResponse = false;
+            throw error;
           }
-          const args = this.$refs.protoMessage.getArgs();
-          console.log(args);
+        },
+
+        /**
+         * Call read function of the contract
+         */
+        async callWriteFunction() {
+          try {
+            this.waitingResponse = true;
+            if (!this.contractFunction) {
+              throw new Error("contractFunction not defined");
+            }
+
+            // get the arguments defined by the user
+            let args = {};
+            if (this.contractFunction.protobufType) {
+              args = this.$refs.protoMessage.getArgs();
+            }
+            console.log(`Calling write function '${functionName}'`);
+            console.log("Arguments:");
+            console.log(args);
+
+            // execute the write function in the blockchain
+            const functionName = this.contractFunction.name;
+            const { transaction } =
+              await this.contract.functions[functionName](args);
+            this.results = JSON.stringify(result, null, 2);
+            this.waitingResponse = false;
+          } catch (error) {
+            this.results = error.message;
+            this.waitingResponse = false;
+            throw error;
+          }
         },
       },
     });
