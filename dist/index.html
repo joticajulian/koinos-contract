@@ -50,6 +50,26 @@
           >
             {{results}}
           </div>
+          <div v-if="txId" class="tx">
+            Transaction submitted to the mempool (check it in
+            <a :href="`https://koinosblocks.com/tx/${txId}`" target="_blank"
+              >koinosblocks</a
+            >
+            or
+            <a :href="`https://koiner.app/transactions/${txId}`" target="_blank"
+              >koiner.app</a
+            >). Open the console to see the receipt.
+            <div v-if="!blockNumber">
+              Waiting some seconds in order to be mined in a block
+              <span
+                ><div v-if="!blockNumber" class="loader with-text"></div
+              ></span>
+            </div>
+          </div>
+          <div v-if="blockNumber && !error" class="block">
+            Transaction mined in block {{blockNumber}}.
+          </div>
+          <div class="results red" v-if="error">{{error}}</div>
         </div>
       </div>
     </div>
@@ -76,6 +96,9 @@
           inputContractId: "",
           results: "",
           waitingResponse: false,
+          txId: "",
+          blockNumber: "",
+          error: "",
         };
       },
 
@@ -99,14 +122,10 @@
          * Load the contract class
          */
         async loadContract() {
-          //if (!this.accounts) await this.connectKondor();
-          const provider = new Provider(["https://api.koinos.io"]);
-          //const userAddress = this.accounts[0].address;
-
           this.contract = new Contract({
             id: "1EwJUW4BFbA4EGmSyB9bgdhB3gk2f3shRN",
-            provider,
-            //signer: kondor.getSigner(userAddress),
+            provider: new Provider(["https://api.koinos.io"]),
+            // signer: The signer will be assigned later
           });
           await this.contract.fetchAbi();
 
@@ -145,12 +164,16 @@
          */
         async callReadFunction() {
           try {
+            this.error = "";
+            this.results = "";
             this.waitingResponse = true;
+
             if (!this.contractFunction) {
               throw new Error("contractFunction not defined");
             }
 
             // get the arguments defined by the user
+            const functionName = this.contractFunction.name;
             let args = {};
             if (this.contractFunction.protobufType) {
               args = this.$refs.protoMessage.getArgs();
@@ -160,13 +183,12 @@
             console.log(args);
 
             // execute the read function in the blockchain
-            const functionName = this.contractFunction.name;
             const { result } =
               await this.contract.functions[functionName](args);
             this.results = JSON.stringify(result, null, 2);
             this.waitingResponse = false;
           } catch (error) {
-            this.results = error.message;
+            this.error = error.message;
             this.waitingResponse = false;
             throw error;
           }
@@ -177,12 +199,25 @@
          */
         async callWriteFunction() {
           try {
+            this.error = "";
+            this.txId = "";
+            this.blockNumber = "";
             this.waitingResponse = true;
+
+            // get signer
+            if (!this.accounts) throw new Error("Connect wallet");
+            const userAddress = this.accounts[0].address;
+            const signer = kondor.getSigner(userAddress);
+
+            // assign signer to contract
+            this.contract.signer = signer;
+
             if (!this.contractFunction) {
               throw new Error("contractFunction not defined");
             }
 
             // get the arguments defined by the user
+            const functionName = this.contractFunction.name;
             let args = {};
             if (this.contractFunction.protobufType) {
               args = this.$refs.protoMessage.getArgs();
@@ -192,14 +227,19 @@
             console.log(args);
 
             // execute the write function in the blockchain
-            const functionName = this.contractFunction.name;
-            const { transaction } =
+            const { transaction, receipt } =
               await this.contract.functions[functionName](args);
-            this.results = JSON.stringify(result, null, 2);
             this.waitingResponse = false;
+            console.log("Receipt");
+            console.log(receipt);
+            this.txId = transaction.id;
+            const resultMining = await transaction.wait();
+            console.log(resultMining);
+            this.blockNumber = resultMining.blockNumber;
           } catch (error) {
-            this.results = error.message;
+            this.error = error.message;
             this.waitingResponse = false;
+
             throw error;
           }
         },

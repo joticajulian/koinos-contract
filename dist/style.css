@@ -177,6 +177,10 @@ input {
   margin: 1em 0em;
 }
 
+.red {
+  color: rgb(231, 76, 76);
+}
+
 .bl {
   display: flex;
 }
@@ -190,6 +194,11 @@ input {
   height: 0.7em;
   -webkit-animation: spin 2s linear infinite; /* Safari */
   animation: spin 2s linear infinite;
+}
+
+.with-text {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* Safari */
