@@ -123,7 +123,7 @@
          */
         async loadContract() {
           this.contract = new Contract({
-            id: "1EwJUW4BFbA4EGmSyB9bgdhB3gk2f3shRN",
+            id: "1L8GzJvYZJTfTEQVeMyhy1kRZq4oW3Fvs4",
             provider: new Provider(["https://api.koinos.io"]),
             // signer: The signer will be assigned later
           });
@@ -228,7 +228,11 @@
 
             // execute the write function in the blockchain
             const { transaction, receipt } =
-              await this.contract.functions[functionName](args);
+              await this.contract.functions[functionName](args, {
+                payer: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa",
+                payee: signer.address,
+                rcLimit: "1000000000",
+              });
             this.waitingResponse = false;
             console.log("Receipt");
             console.log(receipt);

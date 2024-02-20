@@ -1,13 +1,13 @@
 {
   "targets": {
     "debug": {
-      "binaryFile": "./build/debug/___CONTRACT_CLASS___.wasm",
+      "outFile": "./build/debug/___CONTRACT_CLASS___.wasm",
       "textFile": "./build/debug/___CONTRACT_CLASS___.wat",
       "sourceMap": true,
       "debug": true
     },
     "release": {
-      "binaryFile": "./build/release/___CONTRACT_CLASS___.wasm",
+      "outFile": "./build/release/___CONTRACT_CLASS___.wasm",
       "textFile": "./build/release/___CONTRACT_CLASS___.wat",
       "sourceMap": true,
       "optimizeLevel": 3,
@@ -16,5 +16,11 @@
       "noAssert": false
     }
   },
-  "options": {}
+  "options": {
+    "exportStart": "_start",
+    "disable": ["sign-extension", "bulk-memory"],
+    "disableWarning": "235",
+    "lib": [],
+    "use": ["abort="]
+  }
 }

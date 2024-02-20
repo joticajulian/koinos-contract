@@ -8,12 +8,12 @@ export function getBytecode() {
   const asconfigFile = path.join(__dirname, "../src/asconfig.json");
   const asconfigData = fs.readFileSync(asconfigFile, "utf8");
   const asconfig = JSON.parse(asconfigData) as {
-    targets: { release: { binaryFile: string } };
+    targets: { release: { outFile: string } };
   };
   const wasmFile = path.join(
     __dirname,
     "../src",
-    asconfig.targets.release.binaryFile,
+    asconfig.targets.release.outFile,
   );
   const bytecode = fs.readFileSync(wasmFile);
   return bytecode;
