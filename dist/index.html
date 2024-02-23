@@ -227,12 +227,13 @@
             console.log(args);
 
             // execute the write function in the blockchain
-            const { transaction, receipt } =
-              await this.contract.functions[functionName](args, {
-                payer: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa",
-                payee: signer.address,
-                rcLimit: "1000000000",
-              });
+            const { transaction, receipt } = await this.contract.functions[
+              functionName
+            ](args, {
+              payer: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa",
+              payee: signer.address,
+              rcLimit: "1000000000",
+            });
             this.waitingResponse = false;
             console.log("Receipt");
             console.log(receipt);

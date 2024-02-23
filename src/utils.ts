@@ -6,7 +6,7 @@ interface PackageJson {
   scripts: {
     [x: string]: string;
   };
-};
+}
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
@@ -24,14 +24,17 @@ export function toPascalCase(string: string) {
 
 export function updatePackageJson(projectSource: string, projectName: string) {
   const file1 = path.join(__dirname, "../templates/base/package.json");
-  const file2 = path.join(__dirname, `../templates/${projectSource}/package.json`);
+  const file2 = path.join(
+    __dirname,
+    `../templates/${projectSource}/package.json`,
+  );
   const data1 = fs.readFileSync(file1, "utf8");
   const data2 = fs.readFileSync(file2, "utf8");
   const json1 = JSON.parse(data1) as PackageJson;
   const json2 = JSON.parse(data2) as PackageJson;
 
   // TODO: create a general merge of jsons
-  Object.keys(json2.scripts).forEach(script => {
+  Object.keys(json2.scripts).forEach((script) => {
     json1.scripts[script] = json2.scripts[script];
   });
 
