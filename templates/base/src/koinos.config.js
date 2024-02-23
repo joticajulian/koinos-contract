@@ -26,12 +26,6 @@ module.exports = {
   files: ["./___CONTRACT_CLASS___.ts"],
   sourceDir: "./assembly",
   buildDir: "./build",
-  filesImport: [
-    {
-      dependency: "@koinosbox/contracts",
-      path: "../node_modules/@koinosbox/contracts/assembly/nft/Nft.ts",
-    },
-  ],
   protoImport: [
     {
       name: "@koinosbox/contracts",

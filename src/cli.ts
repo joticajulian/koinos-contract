@@ -4,7 +4,13 @@ import inquirer, { Question } from "inquirer";
 import fs from "fs";
 import fse from "fs-extra";
 import path from "path";
-import toPascalCase from "./utils.js";
+import { toPascalCase, updatePackageJson } from "./utils.js";
+
+const templateNames = [
+  "NFT Contract"
+] as const;
+
+type TemplateName = typeof templateNames[number];
 
 function updateFiles(filenames: string[], changes: string[][]) {
   filenames.forEach((filename) => {
@@ -35,7 +41,7 @@ async function main() {
       type: "list",
       name: "template",
       message: "Template:",
-      choices: ["NFT Contract"],
+      choices: templateNames,
     } as unknown as Question);
   }
 
@@ -64,10 +70,17 @@ async function main() {
   const contractClass = toPascalCase(contractName);
   const projectName = contractName.toLowerCase().replace(/ /g, "-");
   const abiFile = `${contractClass.toLowerCase()}-abi.json`;
-
+  
   const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-  const sourceDir = path.join(__dirname, "../templates/nft");
+  let sourceDir = path.join(__dirname, "../templates/base");
   fse.copySync(sourceDir, projectName);
+  
+  const templateName = options.template as TemplateName;
+  if (templateName === "NFT Contract") {
+    sourceDir = path.join(__dirname, "../templates/nft");
+    fse.copySync(sourceDir, projectName);
+    updatePackageJson("nft", projectName);
+  }
 
   updateFiles(
     [
