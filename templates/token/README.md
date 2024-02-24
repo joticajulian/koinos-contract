@@ -1,26 +1,12 @@
-# NFT contract - KCS-3.alpha
+# Token contract - KCS-3.alpha
 
 NOTE: This version does not support the authorize function of smart wallets. This part will be implemented after the application of the governance proposal.
 
 ### Configure the contract
 
-First open the contract `src/assembly/___CONTRACT_CLASS___.ts`. As you can see this contract extends the Nft Class, which already contains all the methods and parameters for an NFT collection.
+First open the contract `src/assembly/___CONTRACT_CLASS___.ts`. As you can see this contract extends the Token Class, which already contains all the methods and parameters for a token.
 
-Now update `_name`, `_symbol`, and `_uri` to the specific values for your collection.
-
-The `_uri` is the API to resolve the metadata of the NFTs. However, the KCS-3-nft standard allows you to store the metadata onchain so you don't have to provide this API.
-
-If you plan to store the metadata onchain then set an empty string for the `_uri`:
-
-```ts
-_uri: string = "";
-```
-
-If the metadata will be served by an external API then define its URI:
-
-```ts
-_uri: string = "https://example.com";
-```
+Now update `_name`, `_symbol`, and `_decimals` to the specific values for your token.
 
 You can also customize the contract by adding your code in this file.
 
@@ -57,37 +43,20 @@ To deploy the contract in mainnet run:
 yarn deploy mainnet
 ```
 
-### Mint NFTs
+### Mint tokens
 
 Now open the `.env` file and define the following values:
 
-- `TOTAL_NFTS`: Total NFTs to mint in the collection.
-- `WRITE_METADATA`: Set true or false. If it is "true", then the script will submit the metadata to the blockchain. In that case update the metadata files in "scripts/metadata" folder.
+- `TOTAL_SUPPLY`: Total tokens to mint. The contract address will receive these tokens.
 
-To mint the NFTs in harbinger run:
+To mint tokens in harbinger run:
 
 ```sh
 yarn mint
 ```
 
-To mint the NFTs in mainnet run:
+To mint tokens in mainnet run:
 
 ```sh
 yarn mint mainnet
-```
-
-### Sell NFTs
-
-Open the `.env` file and define the `PRICE` in KOIN.
-
-To sell the NFTs in https://kollection.app/ run:
-
-```sh
-yarn sell mainnet kollection
-```
-
-To sell the NFTs in https://dapp.koinosraffles.io/marketplace run:
-
-```sh
-yarn sell mainnet koinos-raffles
 ```

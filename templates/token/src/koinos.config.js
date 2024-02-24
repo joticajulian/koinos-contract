@@ -27,6 +27,12 @@ module.exports = {
   supportAbi1: true,
   sourceDir: "./assembly",
   buildDir: "./build",
+  filesImport: [
+    {
+      dependency: "@koinosbox/contracts",
+      path: "../node_modules/@koinosbox/contracts/assembly/token/Token.ts",
+    },
+  ],
   protoImport: [
     {
       name: "@koinosbox/contracts",
