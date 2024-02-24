@@ -1,7 +1,5 @@
 # NFT contract - KCS-3.alpha
 
-NOTE: This version does not support the authorize function of smart wallets. This part will be implemented after the application of the governance proposal.
-
 ### Configure the contract
 
 First open the contract `src/assembly/___CONTRACT_CLASS___.ts`. As you can see this contract extends the Nft Class, which already contains all the methods and parameters for an NFT collection.

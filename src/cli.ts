@@ -6,7 +6,7 @@ import fse from "fs-extra";
 import path from "path";
 import { toPascalCase, updatePackageJson } from "./utils.js";
 
-const templateNames = ["NFT Contract"] as const;
+const templateNames = ["Token Contract", "NFT Contract"] as const;
 
 type TemplateName = (typeof templateNames)[number];
 
@@ -73,31 +73,37 @@ async function main() {
   let sourceDir = path.join(__dirname, "../templates/base");
   fse.copySync(sourceDir, projectName);
 
+  const filesToUpdate = [
+    path.join(projectName, "package.json"),
+    path.join(projectName, "README.md"),
+    path.join(projectName, "src/koinos.config.js"),
+    path.join(projectName, "src/asconfig.json"),
+    path.join(projectName, "src/assembly/Contract.ts"),
+    path.join(projectName, "scripts/deploy.ts"),
+  ];
+
   const templateName = options.template as TemplateName;
   if (templateName === "NFT Contract") {
     sourceDir = path.join(__dirname, "../templates/nft");
     fse.copySync(sourceDir, projectName);
     updatePackageJson("nft", projectName);
-  }
-
-  updateFiles(
-    [
-      path.join(projectName, "package.json"),
-      path.join(projectName, "README.md"),
-      path.join(projectName, "src/koinos.config.js"),
-      path.join(projectName, "src/asconfig.json"),
-      path.join(projectName, "src/assembly/Contract.ts"),
-      path.join(projectName, "scripts/deploy.ts"),
+    filesToUpdate.push(
       path.join(projectName, "scripts/mint.ts"),
       path.join(projectName, "scripts/sell.ts"),
-    ],
-    [
-      ["___CONTRACT_NAME___", contractName],
-      ["___CONTRACT_CLASS___", contractClass],
-      ["___PROJECT_NAME___", projectName],
-      ["___CONTRACT_ABI_FILE___", abiFile],
-    ],
-  );
+    );
+  } else if (templateName === "Token Contract") {
+    sourceDir = path.join(__dirname, "../templates/token");
+    fse.copySync(sourceDir, projectName);
+    updatePackageJson("token", projectName);
+    filesToUpdate.push(path.join(projectName, "scripts/mint.ts"));
+  }
+
+  updateFiles(filesToUpdate, [
+    ["___CONTRACT_NAME___", contractName],
+    ["___CONTRACT_CLASS___", contractClass],
+    ["___PROJECT_NAME___", projectName],
+    ["___CONTRACT_ABI_FILE___", abiFile],
+  ]);
 
   fs.renameSync(
     path.join(projectName, "src/assembly/Contract.ts"),
