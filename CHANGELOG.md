@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.0.0-alpha.9](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.9) (2024-02-26)
+
+### 🚀 Features
+
+- Template for generic contract
+
 ## [v1.0.0-alpha.8](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.8) (2024-02-24)
 
 ### 🚀 Features
