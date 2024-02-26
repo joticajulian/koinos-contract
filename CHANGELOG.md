@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.0.0-alpha.10](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.10) (2024-02-26)
+
+### 🐛 Bug Fixes
+
+- Fix ABI computation when protofiles has empty strings
+- Fix proto file name
+
 ## [v1.0.0-alpha.9](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.9) (2024-02-26)
 
 ### 🚀 Features
