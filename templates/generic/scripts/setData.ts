@@ -1,22 +1,15 @@
 /**
  * Script to mint tokens
  */
+import crypto from "crypto";
 import { Signer, Contract, Provider } from "koilib";
-import fs from "fs";
-import path from "path";
 import * as dotenv from "dotenv";
 import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
 import abi from "../src/build/___CONTRACT_ABI_FILE___";
 import koinosConfig from "../src/koinos.config.js";
 
 dotenv.config();
-
-if (!process.env.TOTAL_SUPPLY)
-  throw new Error(`The env var TOTAL_SUPPLY is not defined`);
-
 const useFreeMana = process.env.USE_FREE_MANA === "true";
-const totalSupply = process.env.TOTAL_SUPPLY;
-
 const [inputNetworkName] = process.argv.slice(2);
 
 async function main() {
@@ -25,13 +18,18 @@ async function main() {
   if (!network) throw new Error(`network ${networkName} not found`);
   const provider = new Provider(network.rpcNodes);
 
+  const signer = new Signer({
+    privateKey: crypto.randomBytes(32).toString("hex"),
+    provider,
+  });
+
   const contractAccount = Signer.fromWif(
     network.accounts.contract.privateKeyWif,
   );
-  contractAccount.provider = provider;
 
   const contract = new Contract({
-    signer: contractAccount,
+    id: contractAccount.address,
+    signer,
     provider,
     abi,
   });
@@ -41,7 +39,7 @@ async function main() {
   if (useFreeMana) {
     txOptions = {
       payer: network.accounts.freeManaSharer.id,
-      payee: contract.getId(),
+      payee: signer.address,
       rcLimit,
     };
   } else {
@@ -51,7 +49,7 @@ async function main() {
     manaSharer.provider = provider;
     txOptions = {
       payer: manaSharer.address,
-      payee: contract.getId(),
+      payee: signer.address,
       rcLimit,
       beforeSend: async (tx: TransactionJson) => {
         await manaSharer.signTransaction(tx);
@@ -59,15 +57,19 @@ async function main() {
     };
   }
 
-  const { transaction, receipt } = await contract.functions.mint(
+  const { transaction, receipt } = await contract.functions.set_data_of(
     {
-      to: contract.getId(),
-      value: totalSupply,
+      account: signer.address,
+      data: {
+        name: "my name",
+        value: "123",
+      },
     },
     txOptions,
   );
 
   console.log("Transaction submitted");
+  console.log(`Data set for ${signer.address}`);
   console.log(
     `consumption: ${(Number(receipt!.rc_used) / 1e8).toFixed(2)} mana`,
   );

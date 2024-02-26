@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "setdata": "ts-node scripts/setData"
+  }
+}
