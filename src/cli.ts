@@ -132,7 +132,7 @@ async function main() {
   if (templateName === "Generic Contract") {
     fs.renameSync(
       path.join(projectName, "src/assembly/proto/contract.proto"),
-      path.join(projectName, "src/assembly/proto", `${projectName}.proto`),
+      path.join(projectName, "src/assembly/proto", `${protoName}.proto`),
     );
   }
 }
