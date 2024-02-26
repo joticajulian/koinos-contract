@@ -244,7 +244,7 @@ export const ProtoForm = {
         }
 
         if (nested && !isEnum) {
-          finalArgs[name] = this.$refs[`${this.reference}child`].getArgs();
+          finalArgs[name] = this.$refs[`${this.reference}child`][0].getArgs();
           return;
         }
 

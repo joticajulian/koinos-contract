@@ -123,8 +123,9 @@
          */
         async loadContract() {
           this.contract = new Contract({
-            id: "1L8GzJvYZJTfTEQVeMyhy1kRZq4oW3Fvs4",
-            provider: new Provider(["https://api.koinos.io"]),
+            //id: "1L8GzJvYZJTfTEQVeMyhy1kRZq4oW3Fvs4",
+            id: "16tKwjvXDKn7CTVo2QbheHHGeVB5xk6QLE",
+            provider: new Provider(["https://harbinger-api.koinos.io"]),
             // signer: The signer will be assigned later
           });
           await this.contract.fetchAbi();
@@ -230,7 +231,7 @@
             const { transaction, receipt } = await this.contract.functions[
               functionName
             ](args, {
-              payer: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa",
+              //payer: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa",
               payee: signer.address,
               rcLimit: "1000000000",
             });
