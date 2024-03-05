@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.0.0-alpha.11](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.11) (2024-03-05)
+
+### 🐛 Bug Fixes
+
+- Fix selection of template
+
 ## [v1.0.0-alpha.10](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.10) (2024-02-26)
 
 ### 🐛 Bug Fixes
