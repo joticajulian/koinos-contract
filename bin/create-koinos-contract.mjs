@@ -8,9 +8,9 @@ const args = [require.resolve("../lib/cli"), ...process.argv.slice(2)];
 
 const spawned = spawn("node", args, {
   env: Object.assign({}, process.env, { FORCE_COLOR: "1" }),
+  stdio: ["inherit"],
 });
 
-process.stdin.pipe(spawned.stdin);
 spawned.stdout.pipe(process.stdout);
 spawned.stderr.pipe(process.stderr);
 spawned.ref();
