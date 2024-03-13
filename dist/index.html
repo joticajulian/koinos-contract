@@ -11,8 +11,8 @@
 </head>
 
 <body class="h-full text-neutral-900">
-  <div id="app" class="">
-    <div class="flex-col justify-center content-center items-center w-screen h-screen px-16">
+  <div id="app" class="flex flex-col justify-center items-center">
+    <div class="flex-col justify-center content-center items-center w-screen h-screen px-16 max-w-7xl">
 
       <header class="p-2">
         <nav class="bg-white px-4 lg:px-6 py-2.5">
@@ -36,15 +36,19 @@
           smart contracts on the Koinos blockchain. It dynamically generates a user interface based on the ABI
           (Application Binary Interface) of a smart contract, allowing developers to easily call functions and interact
           with contracts without writing custom code.</div>
-        <div class="my-4">
+        <div class="my-4 space-y-4">
           <h2 class="text-2xl mb-4">Key Features</h2>
-          <ul>
-            <li><span class="font-bold">Dynamic Interface Generation:</span> Automatically creates a user-friendly interface from a smart contract's
+          <ul class="space-y-2">
+            <li><span class="font-bold">Dynamic Interface Generation:</span> Automatically creates a user-friendly
+              interface from a smart contract's
               ABI.</li>
-            <li><span class="font-bold">Function Execution:</span> Supports both read (querying data without making a transaction) and write (making
+            <li><span class="font-bold">Function Execution:</span> Supports both read (querying data without making a
+              transaction) and write (making
               transactions) operations on the blockchain.</li>
-            <li><span class="font-bold">Wallet Integration:</span> Connects with Kondor wallet for seamless transactions and interactions.</li>
-            <li><span class="font-bold">Transaction and Result Display:</span> Shows detailed information about transactions and their results,
+            <li><span class="font-bold">Wallet Integration:</span> Connects with Kondor wallet for seamless transactions
+              and interactions.</li>
+            <li><span class="font-bold">Transaction and Result Display:</span> Shows detailed information about
+              transactions and their results,
               including mining status and errors.</li>
           </ul>
 
@@ -53,57 +57,93 @@
         <!-- <div class="w-4 h-4 bg-slate-400"></div>
       <div class="w-4 h-4 bg-neutral-900"></div> -->
       </section>
-      <div class="flex flex-row items-start gap-4 p-4">
-        <div class="bg-gray-100 rounded p-4 flex-row items-center gap-3 w-1/4 border">
-          <h2 class="font-bold mb-2 text-neutral-900">Select Function</h2>
-          <div v-for="fn in contractFunctions" :key="fn.name" class="py-1">
-            <button @click="openFunction(fn.name)"
-              class="text-slate-600 text-left hover:bg-sky-200 px-3 py-1 focus:outline-none">{{fn.prettyName}}</button>
+
+      <div class="flex flex-col justify-between">
+        <div class="flex flex-row items-start gap-4 p-4 left flex-1">
+          <div class="bg-gray-100 rounded p-4 flex-row items-center gap-3 w-1/4">
+            <h2 class="font-bold mb-2 text-neutral-900">Select Function</h2>
+            <div v-for="fn in contractFunctions" :key="fn.name" class="py-1">
+              <button @click="openFunction(fn.name)"
+                class="text-slate-600 text-left hover:bg-sky-200 px-3 py-1 focus:outline-none">{{fn.prettyName}}</button>
+            </div>
+          </div>
+          <!-- Right side -->
+          <div class="p-4 w-full form-1 min-h-[22rem]">
+            <div class="flex flex-row justify-between justify-start">
+              <div>
+                <h2 class="text-2xl">{{contractFunction?.prettyName}}</h2>
+                <div class="fn-description mb-4">{{contractFunction?.description}}</div>
+              </div>
+              <div>
+                <button v-if="contractFunction && contractFunction.readOnly" @click="callReadFunction()" class="bl">
+                  Read
+                  <div v-if="waitingResponse" class="loader"></div>
+                </button>
+                <button v-if="contractFunction && !contractFunction.readOnly" @click="callWriteFunction()">
+                  Send <span v-if="waitingResponse" class="loader"></span>
+                </button>
+              </div>
+            </div>
+            <proto-form v-if="contractFunction && contractFunction.protobufType"
+              :protobuftype="contractFunction.protobufType" :serializer="contract.serializer" reference="protoMessage"
+              ref="protoMessage"></proto-form>
+
+
+            <div class="results" v-if="results && contractFunction && contractFunction.readOnly">
+              {{results}}
+            </div>
+            <div v-if="txId" class="tx">
+              Transaction submitted to the mempool (check it in
+              <a :href="`https://koinosblocks.com/tx/${txId}`" target="_blank">koinosblocks</a>
+              or
+              <a :href="`https://koiner.app/transactions/${txId}`" target="_blank">koiner.app</a>). Open the console to
+              see
+              the receipt.
+              <div v-if="!blockNumber">
+                Waiting to be mined...
+                <span>
+                  <div v-if="!blockNumber" class="loader with-text"></div>
+                </span>
+              </div>
+            </div>
+            <div v-if="blockNumber && !error" class="block">
+              Transaction mined in block {{blockNumber}}.
+            </div>
+            <div class="results red" v-if="error">{{error}}</div>
           </div>
         </div>
-        <!-- Right side -->
-        <div class="p-4 w-full form-1 border w-full">
-          <div class="flex flex-row justify-between justify-start ">
-            <div>
-              <h2 class="text-2xl">{{contractFunction?.prettyName}}</h2>
-              <div class="fn-description mb-4">{{contractFunction?.description}}</div>
-            </div>
-            <div>
-              <button v-if="contractFunction && contractFunction.readOnly" @click="callReadFunction()" class="bl">
-                Read
-                <div v-if="waitingResponse" class="loader"></div>
-              </button>
-              <button v-if="contractFunction && !contractFunction.readOnly" @click="callWriteFunction()">
-                Send <span v-if="waitingResponse" class="loader"></span>
-              </button>
-            </div>
-          </div>
-          <proto-form v-if="contractFunction && contractFunction.protobufType"
-            :protobuftype="contractFunction.protobufType" :serializer="contract.serializer" reference="protoMessage"
-            ref="protoMessage"></proto-form>
+        <div class="right flex-1 p-4">
+          <ol class="space-y-4">
+            <li>
+              <p><strong>Get My Value</strong></p>
+              <ul>
+                <li>Click to retrieve and display your current value stored within the contract. This
+                  function only reads data and does not perform any transactions.</li>
+              </ul>
+            </li>
+            <li>
+              <p><strong>Data Of</strong></p>
+              <ul>
+                <li>Use this button to fetch and display specific data from the contract based on the
+                  provided identifier. Ideal for retrieving information without making changes.</li>
+              </ul>
+            </li>
+            <li>
+              <p><strong>Set My Value</strong></p>
+              <ul>
+                <li>Allows you to set or update your personal value within the contract. This function
+                  creates a transaction that will be recorded on the blockchain.</li>
+              </ul>
+            </li>
+            <li>
+              <p><strong>Set Data O</strong></p>
+              <ul>
+                <li>This function enables you to update specific data within the contract based on its
+                  identifier. A transaction will be created and executed on the blockchain.</li>
+              </ul>
+            </li>
+          </ol>
 
-
-          <div class="results" v-if="results && contractFunction && contractFunction.readOnly">
-            {{results}}
-          </div>
-          <div v-if="txId" class="tx">
-            Transaction submitted to the mempool (check it in
-            <a :href="`https://koinosblocks.com/tx/${txId}`" target="_blank">koinosblocks</a>
-            or
-            <a :href="`https://koiner.app/transactions/${txId}`" target="_blank">koiner.app</a>). Open the console to
-            see
-            the receipt.
-            <div v-if="!blockNumber">
-              Waiting to be mined...
-              <span>
-                <div v-if="!blockNumber" class="loader with-text"></div>
-              </span>
-            </div>
-          </div>
-          <div v-if="blockNumber && !error" class="block">
-            Transaction mined in block {{blockNumber}}.
-          </div>
-          <div class="results red" v-if="error">{{error}}</div>
         </div>
       </div>
     </div>
