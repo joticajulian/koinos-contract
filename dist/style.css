@@ -3,8 +3,7 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: #213547;
+
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -55,7 +54,6 @@ h1 {
 }
 
 .menu {
-  background: #80a8ff;
   padding: 1em;
   width: 30%;
   /* max-width: 20em; */
@@ -83,10 +81,10 @@ h1 {
 }
 
 .fn-description {
-  margin-bottom: 1.5em;
+
 }
 
-button {
+/* button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -96,24 +94,22 @@ button {
   background-color: #ececec;
   cursor: pointer;
   transition: border-color 0.25s;
-}
+} */
 button:hover {
   border-color: #fcff64;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 8px auto -webkit-focus-ring-color;
 }
 
 input {
-  border-radius: 8px;
+  padding: .5em;
+  border-radius: 0.25rem;
   border: 1px solid #1a1a1a;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  /* background-color: #1a1a1a; */
-  /* color: #fff; */
+  font-size: 1.2em !important;
   transition: border-color 0.25s;
 }
 
@@ -125,15 +121,29 @@ input {
 }
 
 .protoform {
-  padding: 1em;
-  border-radius: 15px;
-  margin: 1em 0;
+  border-radius: 1rem;
   display: flex;
   flex-direction: column;
-  background: #80a8ff;
-  color: white;
+}
+.protoform .protoform {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1em;
 }
 
+.protoform button {
+  margin-top: 1em;
+  background-color: red;
+  border-radius: .1rem;
+}
+
+.form-1 button {
+  margin-top: 1em;
+  background-color: rgb(56 189 248);
+  padding: 0.5em 1em;
+  border-radius: .25rem;
+}
 .name {
   margin-bottom: 0.5em;
   margin-right: 0.5em;
@@ -142,8 +152,8 @@ input {
 
 .arg {
   display: flex;
-  margin: 0.5em 0;
   align-items: baseline;
+  flex-direction: column;
 }
 
 .item {
@@ -173,12 +183,12 @@ input {
   color: #ffffff;
   font-family: monospace;
   padding: 1.5em;
-  border-radius: 8px;
+  border-radius: .5rem;
   margin: 1em 0em;
 }
 
 .red {
-  color: rgb(231, 76, 76);
+  color: rgb(246, 179, 179);
 }
 
 .bl {
