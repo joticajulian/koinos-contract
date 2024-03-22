@@ -215,13 +215,11 @@
     const app = createApp({
       data() {
         return {
-          accounts: null,
           contract: null,
           contractFunction: null,
           contractFunctions: [],
           signer: null,
           address: null,
-          inputContractId: "",
           results: "",
           waitingResponse: false,
           txId: "",
@@ -236,27 +234,34 @@
 
       methods: {
         async connectWallet(walletName) {
-          switch (walletName) {
-            case "kondor": {
-              this.signer = await connectKondor();
-              break;
+          try {
+            this.error = "";
+            switch (walletName) {
+              case "kondor": {
+                this.signer = await connectKondor();
+                break;
+              }
+              default: {
+                throw new Error(`invalid wallet ${walletName}`);
+              }
             }
-            default: {
-              throw new Error(`invalid wallet ${walletName}`);
-            }
+            this.address = this.signer.getAddress();
+          } catch (error) {
+            this.error = error.message;
+            throw error;
           }
-          this.address = this.signer.getAddress();
         },
 
         /**
          * Load the contract class
          */
         async loadContract() {
+          this.error = "";
+          this.results = "";
           this.contract = new Contract({
             //id: "1L8GzJvYZJTfTEQVeMyhy1kRZq4oW3Fvs4",
             id: "16tKwjvXDKn7CTVo2QbheHHGeVB5xk6QLE",
             provider: new Provider(["https://harbinger-api.koinos.io"]),
-            // signer: The signer will be assigned later
           });
           await this.contract.fetchAbi();
 
