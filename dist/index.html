@@ -207,6 +207,7 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script type="module">
     import { ProtoForm, prettyName } from "./js/protoForm.js";
+    import { contractRead, contractWrite } from "./js/contract.js";
 
     const { createApp } = Vue;
     let defaultKoinosProvider = "https://api.koinos.io";
@@ -307,14 +308,9 @@
             if (this.contractFunction.protobufType) {
               args = this.$refs.protoMessage.getArgs();
             }
-            console.log(`Calling read function '${functionName}'`);
-            console.log("Arguments:");
-            console.log(args);
 
-            // execute the read function in the blockchain
-            const { result } =
-              await this.contract.functions[functionName](args);
-            this.results = JSON.stringify(result, null, 2);
+            const results = await contractRead(functionName, args);
+            this.results = JSON.stringify(results, null, 2);
             this.waitingResponse = false;
           } catch (error) {
             this.error = error.message;
@@ -324,7 +320,7 @@
         },
 
         /**
-         * Call read function of the contract
+         * Call write function of the contract
          */
         async callWriteFunction() {
           try {
@@ -351,25 +347,11 @@
             if (this.contractFunction.protobufType) {
               args = this.$refs.protoMessage.getArgs();
             }
-            console.log(`Calling write function '${functionName}'`);
-            console.log("Arguments:");
-            console.log(args);
 
-            // execute the write function in the blockchain
-            const { transaction, receipt } = await this.contract.functions[
-              functionName
-            ](args, {
-              //payer: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa",
-              payee: signer.address,
-              rcLimit: "1000000000",
-            });
+            const result = await contractWrite(functionName, args, signer);
             this.waitingResponse = false;
-            console.log("Receipt");
-            console.log(receipt);
-            this.txId = transaction.id;
-            const resultMining = await transaction.wait();
-            console.log(resultMining);
-            this.blockNumber = resultMining.blockNumber;
+            this.txId = result.transaction.id;
+            this.blockNumber = result.blockNumber;
           } catch (error) {
             this.error = error.message;
             this.waitingResponse = false;
