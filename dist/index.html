@@ -27,7 +27,7 @@
               </div>
 
               <button
-                @click="connectKondor()"
+                @click="connectWallet('kondor')"
                 class="focus:outline-none text-white bg-sky-400 hover:bg-sky-800 focus:ring-4 focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-sky-600 dark:hover:bg-sky-700 dark:focus:ring-sky-900"
               >
                 Connect Kondor
@@ -208,12 +208,9 @@
   <script type="module">
     import { ProtoForm, prettyName } from "./js/protoForm.js";
     import { contractRead, contractWrite } from "./js/contract.js";
+    import { connectKondor } from "./js/wallets.js";
 
     const { createApp } = Vue;
-    let defaultKoinosProvider = "https://api.koinos.io";
-    const mkwWalletConnectorUrl =
-      "https://mykw.vercel.app/embed/wallet-connector";
-    let mkw;
 
     const app = createApp({
       data() {
@@ -222,6 +219,8 @@
           contract: null,
           contractFunction: null,
           contractFunctions: [],
+          signer: null,
+          address: null,
           inputContractId: "",
           results: "",
           waitingResponse: false,
@@ -233,18 +232,20 @@
 
       mounted() {
         this.loadContract();
-        // mkw = new MyKoinosWallet(mkwWalletConnectorUrl);
-        // mkw.connect();
       },
 
       methods: {
-        /**
-         * Connect wallet
-         */
-        async connectKondor() {
-          console.log("Connecting kondor...");
-          this.accounts = await kondor.getAccounts();
-          console.log("Kondor connected");
+        async connectWallet(walletName) {
+          switch (walletName) {
+            case "kondor": {
+              this.signer = await connectKondor();
+              break;
+            }
+            default: {
+              throw new Error(`invalid wallet ${walletName}`);
+            }
+          }
+          this.address = this.signer.getAddress();
         },
 
         /**
@@ -304,11 +305,11 @@
 
             // get the arguments defined by the user
             const functionName = this.contractFunction.name;
-            let args = {};
-            if (this.contractFunction.protobufType) {
-              args = this.$refs.protoMessage.getArgs();
-            }
+            const args = this.contractFunction.protobufType
+              ? this.$refs.protoMessage.getArgs()
+              : {};
 
+            // read contract
             const results = await contractRead(functionName, args);
             this.results = JSON.stringify(results, null, 2);
             this.waitingResponse = false;
@@ -329,26 +330,20 @@
             this.blockNumber = "";
             this.waitingResponse = true;
 
-            // get signer
-            if (!this.accounts) throw new Error("Connect wallet");
-            const userAddress = this.accounts[0].address;
-            const signer = kondor.getSigner(userAddress);
-
-            // assign signer to contract
-            this.contract.signer = signer;
-
             if (!this.contractFunction) {
               throw new Error("contractFunction not defined");
             }
 
+            if (!this.signer) throw new Error("Connect wallet");
+
             // get the arguments defined by the user
             const functionName = this.contractFunction.name;
-            let args = {};
-            if (this.contractFunction.protobufType) {
-              args = this.$refs.protoMessage.getArgs();
-            }
+            const args = this.contractFunction.protobufType
+              ? this.$refs.protoMessage.getArgs()
+              : {};
 
-            const result = await contractWrite(functionName, args, signer);
+            // submit transaction
+            const result = await contractWrite(functionName, args, this.signer);
             this.waitingResponse = false;
             this.txId = result.transaction.id;
             this.blockNumber = result.blockNumber;
