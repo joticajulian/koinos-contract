@@ -150,13 +150,13 @@
               <div v-if="blockNumber && !error" class="block">
                 Transaction mined in block {{blockNumber}}.
               </div>
-              <div class="" v-if="error">{{error}}</div>
+              <div class="error" v-if="error">{{error}}</div>
             </div>
           </div>
           <!-- END Form -->
           <div class="right flex-1 p-4">
             <ol class="space-y-4">
-              <li>
+              <!-- <li>
                 <p><strong>Get My Value</strong></p>
                 <ul>
                   <li>
@@ -165,37 +165,7 @@
                     not perform any transactions.
                   </li>
                 </ul>
-              </li>
-              <li>
-                <p><strong>Data Of</strong></p>
-                <ul>
-                  <li>
-                    Use this button to fetch and display specific data from the
-                    contract based on the provided identifier. Ideal for
-                    retrieving information without making changes.
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <p><strong>Set My Value</strong></p>
-                <ul>
-                  <li>
-                    Allows you to set or update your personal value within the
-                    contract. This function creates a transaction that will be
-                    recorded on the blockchain.
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <p><strong>Set Data O</strong></p>
-                <ul>
-                  <li>
-                    This function enables you to update specific data within the
-                    contract based on its identifier. A transaction will be
-                    created and executed on the blockchain.
-                  </li>
-                </ul>
-              </li>
+              </li> -->
             </ol>
           </div>
         </div>
@@ -207,7 +177,7 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script type="module">
     import { ProtoForm, prettyName } from "./js/protoForm.js";
-    import { contractRead, contractWrite } from "./js/contract.js";
+    import { contractRead, contractWrite, contract } from "./js/contract.js";
     import { connectKondor } from "./js/wallets.js";
 
     const { createApp } = Vue;
@@ -258,12 +228,8 @@
         async loadContract() {
           this.error = "";
           this.results = "";
-          this.contract = new Contract({
-            //id: "1L8GzJvYZJTfTEQVeMyhy1kRZq4oW3Fvs4",
-            id: "16tKwjvXDKn7CTVo2QbheHHGeVB5xk6QLE",
-            provider: new Provider(["https://harbinger-api.koinos.io"]),
-          });
-          await this.contract.fetchAbi();
+          this.waitingResponse = false;
+          this.contract = contract;
 
           this.contractFunctions = Object.keys(this.contract.abi.methods).map(
             (name) => {
@@ -280,6 +246,9 @@
          * Load function details in the website
          */
         openFunction(name) {
+          this.error = "";
+          this.results = "";
+          this.waitingResponse = false;
           const { argument, description } = this.contract.abi.methods[name];
           const protobufType = argument
             ? this.contract.serializer.root.lookupType(argument)

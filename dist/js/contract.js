@@ -1,24 +1,26 @@
 // import { Contract } from "koilib";
+import abi from "./abi.js";
+import { CONTRACT_ID, RPC_NODE } from "./constants.js";
 
-const contract = new Contract({
-  id: "16tKwjvXDKn7CTVo2QbheHHGeVB5xk6QLE",
-  provider: new Provider(["https://harbinger-api.koinos.io"]),
-  // TODO: abi
-  // signer: undefined
+export const contract = new Contract({
+  id: CONTRACT_ID,
+  provider: new Provider([RPC_NODE]),
+  abi,
 });
 
 /**
  * Call read function of the contract
  */
 export async function contractRead(functionName, args) {
-  await contract.fetchAbi();
-
   console.log(`Calling read function '${functionName}'`);
   console.log("Arguments:");
   console.log(args);
 
   // execute the read function in the blockchain
   const { result } = await contract.functions[functionName](args);
+
+  console.log("Result:");
+  console.log(result);
   return result;
 }
 
@@ -26,7 +28,6 @@ export async function contractRead(functionName, args) {
  * Call write function of the contract
  */
 export async function contractWrite(functionName, args, signer, options) {
-  await contract.fetchAbi();
   console.log(`Calling write function '${functionName}'`);
   console.log("Arguments:");
   console.log(args);

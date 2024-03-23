@@ -53,6 +53,8 @@ function buildInitialInputValues(serializer, _type, _nested, _repeated) {
     return nestedArgs;
   }
 
+  if (_type === "bool") return false;
+
   return "";
 }
 
@@ -61,7 +63,7 @@ export const ProtoForm = {
       <div class="protoform">
         <div v-for="arg in args" class="arg">
           <div class="name">
-            {{arg.prettyName}}
+            {{arg.prettyName}} - {{arg.format}}
           </div>
           <div v-if="arg.repeated">
             <div v-for="(value, i) in arg.value" class="item">
@@ -104,6 +106,16 @@ export const ProtoForm = {
             <div v-for="en in arg.enums" class="form-radio">
               <input type="radio" :value="en.value" v-model="arg.value"/>
               <label>{{en.name}}</label>
+            </div>
+          </div>
+          <div v-else-if="arg.type === 'bool'">
+            <div class="form-radio">
+              <input type="radio" :value="false" v-model="arg.value"/>
+              <label>false</label>
+            </div>
+            <div class="form-radio">
+              <input type="radio" :value="true" v-model="arg.value"/>
+              <label>true</label>
             </div>
           </div>
           <div v-else>
@@ -161,9 +173,13 @@ export const ProtoForm = {
         return;
       }
       this.args = Object.keys(_protobufType.fields).map((name) => {
-        const { type, rule } = _protobufType.fields[name];
+        const { type, rule, options } = _protobufType.fields[name];
         const nested = !nativeTypes.includes(type);
         const repeated = rule === "repeated" && !this.norepeated;
+        const format =
+          options && options["(koinos.btype)"]
+            ? options["(koinos.btype)"]
+            : type.toUpperCase();
 
         let protobufType;
         let isEnum = false;
@@ -193,6 +209,7 @@ export const ProtoForm = {
           prettyName: prettyName(name),
           value,
           type,
+          format,
           isEnum,
           enums,
           nested,
