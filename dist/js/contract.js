@@ -40,8 +40,8 @@ export async function contractWrite(functionName, args, signer, options) {
     // Default options
 
     // payer: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa",
-    payee: signer.address,
-    rcLimit: "1000000000", // 10 mana
+    // payer: signer.getAddress(),
+    rcLimit: 10_00000000, // 10 mana
     // onlyOperation: false,
     // previousOperations: [],
     // nextOperations: [],

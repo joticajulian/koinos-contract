@@ -123,6 +123,8 @@
                 ref="protoMessage"
               ></proto-form>
 
+              <div class="results" v-if="code">{{code}}</div>
+
               <div
                 class="results"
                 v-if="results && contractFunction && contractFunction.readOnly"
@@ -190,6 +192,7 @@
           contractFunctions: [],
           signer: null,
           address: null,
+          code: "",
           results: "",
           waitingResponse: false,
           txId: "",
@@ -226,6 +229,7 @@
          * Load the contract class
          */
         async loadContract() {
+          this.code = "";
           this.error = "";
           this.results = "";
           this.waitingResponse = false;
@@ -246,6 +250,7 @@
          * Load function details in the website
          */
         openFunction(name) {
+          this.code = "";
           this.error = "";
           this.results = "";
           this.waitingResponse = false;
@@ -282,6 +287,10 @@
             const args = this.contractFunction.protobufType
               ? this.$refs.protoMessage.getArgs()
               : {};
+            const textArgs = this.contractFunction.protobufType
+              ? JSON.stringify(args, null, 2)
+              : "";
+            this.code = `contract.functions.${functionName}(${textArgs});`;
 
             // read contract
             const results = await contractRead(functionName, args);
@@ -315,6 +324,20 @@
             const args = this.contractFunction.protobufType
               ? this.$refs.protoMessage.getArgs()
               : {};
+            const textArgs = JSON.stringify(args, null, 2);
+            this.code = `contract.functions.${functionName}(${textArgs},{
+  rcLimit: 10_00000000, // 10 mana
+
+  // other options
+
+  // payer: "${this.signer.getAddress()}",
+  // payee: "${this.signer.getAddress()}",
+  // onlyOperation: false,
+  // previousOperations: [],
+  // nextOperations: [],
+  // signTransaction: true,
+  // sendTransaction: false,
+});`;
 
             // submit transaction
             const result = await contractWrite(functionName, args, this.signer);
