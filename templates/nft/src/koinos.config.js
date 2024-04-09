@@ -1,6 +1,6 @@
 const path = require("path");
 const { HDKoinos } = require("@koinosbox/hdkoinos");
-require("dotenv").config({ path: path.join(__dirname, "../.env") });
+require("dotenv").config({ path: path.join(__dirname, "../../../.env") });
 
 const hdKoinosMainnet = process.env.MAINNET_MNEMONIC
   ? new HDKoinos(process.env.MAINNET_MNEMONIC)

@@ -11,8 +11,13 @@ const templateNames = [
   "Token Contract",
   "NFT Contract",
 ] as const;
-
 type TemplateName = (typeof templateNames)[number];
+
+const frontendOptions = [
+  "Next.js App (React)",
+  "I don't need a frontend",
+] as const;
+type FrontendOptions = (typeof frontendOptions)[number];
 
 function updateFiles(filenames: string[], changes: string[][]) {
   filenames.forEach((filename) => {
@@ -28,6 +33,7 @@ function updateFiles(filenames: string[], changes: string[][]) {
 async function main() {
   program.option("--name");
   program.option("--template");
+  program.option("--frontend");
   program.parse();
   let options = program.opts();
   if (!options) options = {};
@@ -44,6 +50,15 @@ async function main() {
       name: "template",
       message: "Template:",
       choices: templateNames,
+    } as unknown as Question);
+  }
+
+  if (!options.frontend) {
+    questions.push({
+      type: "list",
+      name: "frontend",
+      message: "Frontend:",
+      choices: frontendOptions,
     } as unknown as Question);
   }
 
@@ -79,6 +94,9 @@ async function main() {
 
   const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
+  const createContract = true;
+  let createFrontend = false;
+
   // create root with workspaces
   let sourceDir = path.join(__dirname, "../templates/baseWorkspaces");
   fse.copySync(sourceDir, projectName);
@@ -87,23 +105,29 @@ async function main() {
   sourceDir = path.join(__dirname, "../templates/baseContract");
   fse.copySync(sourceDir, contractFolder);
 
-  // create website
-  sourceDir = path.join(__dirname, "../templates/website");
-  fse.copySync(sourceDir, websiteFolder);
+  const frontendOption = options.frontend as FrontendOptions;
+  if (frontendOption === "Next.js App (React)") {
+    // create website
+    sourceDir = path.join(__dirname, "../templates/website");
+    fse.copySync(sourceDir, websiteFolder);
+    createFrontend = true;
+  }
 
-  const createContract = true;
-  const createWebsite = true;
   let yarnlockFile: string;
-  if (createContract && createWebsite) {
+  if (createContract && createFrontend) {
     yarnlockFile = "yarn-contract-website.lock";
   } else if (createContract) {
     yarnlockFile = "yarn-contract.lock";
-  } else if (createWebsite) {
+  } else if (createFrontend) {
     yarnlockFile = "yarn-website.lock";
   } else {
     throw new Error("you should create a contract or a website");
   }
-  const sourceFile = path.join(__dirname, "../templates/yarnlocks", yarnlockFile);
+  const sourceFile = path.join(
+    __dirname,
+    "../templates/yarnlocks",
+    yarnlockFile,
+  );
   const destFile = path.join(projectName, "yarn.lock");
   fse.copyFileSync(sourceFile, destFile);
 
@@ -115,6 +139,7 @@ async function main() {
     path.join(contractFolder, "src/asconfig.json"),
     path.join(contractFolder, "src/assembly/Contract.ts"),
     path.join(contractFolder, "scripts/deploy.ts"),
+    path.join(contractFolder, "scripts/updateFrontend.ts"),
   ];
 
   // extend the base contract

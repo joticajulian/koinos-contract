@@ -114,17 +114,18 @@ export const KoinosForm = (props: KoinosFormProps) => {
   }, [setValue, props.typeName]);
 
   const args = useMemo(() => {
-    if (
-      (!props.contract || !props.typeName) &&
-      (!props.protobufType || !props.serializer)
-    ) {
+    if (!props.contract && (!props.protobufType || !props.serializer)) {
       throw new Error("invalid properties for KoinosForm");
     }
 
     let fields: INamespace2["fields"];
-    if (props.contract && props.typeName) {
-      fields = (serializer.root.lookupType(props.typeName) as INamespace2)
-        .fields;
+    if (props.contract) {
+      if (props.typeName) {
+        fields = (serializer.root.lookupType(props.typeName) as INamespace2)
+          .fields;
+      } else {
+        fields = {};
+      }
     } else {
       fields = props.protobufType!.fields;
     }

@@ -1,8 +1,3 @@
-// export const CONTRACT_ID = "15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL";
-// export const RPC_NODE = "https://api.koinos.io";
-// export const BLOCK_EXPLORER = "https://koinosblocks.com";
-// export const NETWORK_NAME = "mainnet";
-
 export const CONTRACT_ID = "1FaSvLjQJsCJKq5ybmGsMMQs8RQYyVv8ju";
 export const RPC_NODE = "https://harbinger-api.koinos.io";
 export const BLOCK_EXPLORER = "https://harbinger.koinosblocks.com";

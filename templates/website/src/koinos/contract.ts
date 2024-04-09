@@ -3,7 +3,6 @@ import {
   Provider,
   SignerInterface,
   TransactionReceipt,
-  utils,
 } from "koilib";
 import { CONTRACT_ID, RPC_NODE } from "./constants";
 import abi from "./abi";
@@ -11,8 +10,7 @@ import abi from "./abi";
 export const contract = new Contract({
   id: CONTRACT_ID,
   provider: new Provider([RPC_NODE]),
-  abi: utils.tokenAbi,
-  // abi,
+  abi,
 });
 
 export async function readContract(methodName: string, args: unknown) {

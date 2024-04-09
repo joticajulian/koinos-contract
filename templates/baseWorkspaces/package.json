@@ -4,7 +4,9 @@
   "scripts": {
     "build": "yarn workspace koinos-contract build",
     "deploy": "yarn workspace koinos-contract deploy",
-    "dev": "yarn workspace website-koinos-contract dev"
+    "dev": "yarn workspace website-koinos-contract dev",
+    "keys": "yarn workspace koinos-contract keys",
+    "updateFrontend": "yarn workspace koinos-contract updateFrontend"
   },
   "workspaces": {
     "packages": [

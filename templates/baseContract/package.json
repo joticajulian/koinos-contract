@@ -33,6 +33,8 @@
     "precompile": "koinos-precompiler-as src",
     "build": "yarn precompile && yarn asbuild",
     "deploy": "ts-node scripts/deploy.ts",
+    "updateFrontend": "ts-node scripts/updateFrontend.ts",
+    "keys": "node generateKeys.js",
     "lint": "eslint --max-warnings 0 --ext ts \"*/assembly/**/*.ts\""
   },
   "config": {
