@@ -30,21 +30,21 @@ module.exports = {
   filesImport: [
     {
       dependency: "@koinosbox/contracts",
-      path: "../node_modules/@koinosbox/contracts/assembly/token/Token.ts",
+      path: "../../../node_modules/@koinosbox/contracts/assembly/token/Token.ts",
     },
   ],
   protoImport: [
     {
       name: "@koinosbox/contracts",
-      path: "../node_modules/@koinosbox/contracts/koinosbox-proto",
+      path: "../../../node_modules/@koinosbox/contracts/koinosbox-proto",
     },
     {
       name: "@koinos/sdk-as",
-      path: "../node_modules/koinos-precompiler-as/koinos-proto/koinos",
+      path: "../../../node_modules/koinos-precompiler-as/koinos-proto/koinos",
     },
     {
       name: "__",
-      path: "../node_modules/koinos-precompiler-as/koinos-proto/google",
+      path: "../../../node_modules/koinos-precompiler-as/koinos-proto/google",
     },
   ],
   networks: {

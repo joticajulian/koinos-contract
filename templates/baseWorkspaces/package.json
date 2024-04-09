@@ -1,0 +1,14 @@
+{
+  "name": "___PROJECT_NAME___",
+  "private": true,
+  "scripts": {
+    "build": "yarn workspace koinos-contract build",
+    "deploy": "yarn workspace koinos-contract deploy",
+    "dev": "yarn workspace website-koinos-contract dev"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}

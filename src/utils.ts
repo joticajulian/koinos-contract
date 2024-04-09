@@ -23,7 +23,7 @@ export function toPascalCase(string: string) {
 }
 
 export function updatePackageJson(projectSource: string, projectName: string) {
-  const file1 = path.join(__dirname, "../templates/base/package.json");
+  const file1 = path.join(__dirname, "../templates/baseContract/package.json");
   const file2 = path.join(
     __dirname,
     `../templates/${projectSource}/package.json`,

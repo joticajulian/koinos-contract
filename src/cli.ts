@@ -74,41 +74,71 @@ async function main() {
   const projectName = contractName.toLowerCase().replace(/ /g, "-");
   const protoName = contractClass.toLowerCase();
   const abiFile = `${contractClass.toLowerCase()}-abi.json`;
+  const contractFolder = `${projectName}/packages/contract`;
+  const websiteFolder = `${projectName}/packages/website`;
 
   const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-  let sourceDir = path.join(__dirname, "../templates/base");
+
+  // create root with workspaces
+  let sourceDir = path.join(__dirname, "../templates/baseWorkspaces");
   fse.copySync(sourceDir, projectName);
 
+  // create base contract
+  sourceDir = path.join(__dirname, "../templates/baseContract");
+  fse.copySync(sourceDir, contractFolder);
+
+  // create website
+  sourceDir = path.join(__dirname, "../templates/website");
+  fse.copySync(sourceDir, websiteFolder);
+
+  const createContract = true;
+  const createWebsite = true;
+  let yarnlockFile: string;
+  if (createContract && createWebsite) {
+    yarnlockFile = "yarn-contract-website.lock";
+  } else if (createContract) {
+    yarnlockFile = "yarn-contract.lock";
+  } else if (createWebsite) {
+    yarnlockFile = "yarn-website.lock";
+  } else {
+    throw new Error("you should create a contract or a website");
+  }
+  const sourceFile = path.join(__dirname, "../templates/yarnlocks", yarnlockFile);
+  const destFile = path.join(projectName, "yarn.lock");
+  fse.copyFileSync(sourceFile, destFile);
+
+  // define files that require some naming updates
   const filesToUpdate = [
     path.join(projectName, "package.json"),
-    path.join(projectName, "README.md"),
-    path.join(projectName, "src/koinos.config.js"),
-    path.join(projectName, "src/asconfig.json"),
-    path.join(projectName, "src/assembly/Contract.ts"),
-    path.join(projectName, "scripts/deploy.ts"),
+    path.join(contractFolder, "README.md"),
+    path.join(contractFolder, "src/koinos.config.js"),
+    path.join(contractFolder, "src/asconfig.json"),
+    path.join(contractFolder, "src/assembly/Contract.ts"),
+    path.join(contractFolder, "scripts/deploy.ts"),
   ];
 
+  // extend the base contract
   const templateName = options.template as TemplateName;
   if (templateName === "Generic Contract") {
     sourceDir = path.join(__dirname, "../templates/generic");
-    fse.copySync(sourceDir, projectName);
-    updatePackageJson("generic", projectName);
+    fse.copySync(sourceDir, contractFolder);
+    updatePackageJson("generic", contractFolder);
     filesToUpdate.push(
-      path.join(projectName, "src/assembly/proto/contract.proto"),
+      path.join(contractFolder, "src/assembly/proto/contract.proto"),
     );
   } else if (templateName === "NFT Contract") {
     sourceDir = path.join(__dirname, "../templates/nft");
-    fse.copySync(sourceDir, projectName);
-    updatePackageJson("nft", projectName);
+    fse.copySync(sourceDir, contractFolder);
+    updatePackageJson("nft", contractFolder);
     filesToUpdate.push(
-      path.join(projectName, "scripts/mint.ts"),
-      path.join(projectName, "scripts/sell.ts"),
+      path.join(contractFolder, "scripts/mint.ts"),
+      path.join(contractFolder, "scripts/sell.ts"),
     );
   } else if (templateName === "Token Contract") {
     sourceDir = path.join(__dirname, "../templates/token");
-    fse.copySync(sourceDir, projectName);
-    updatePackageJson("token", projectName);
-    filesToUpdate.push(path.join(projectName, "scripts/mint.ts"));
+    fse.copySync(sourceDir, contractFolder);
+    updatePackageJson("token", contractFolder);
+    filesToUpdate.push(path.join(contractFolder, "scripts/mint.ts"));
   }
 
   updateFiles(filesToUpdate, [
@@ -120,19 +150,19 @@ async function main() {
   ]);
 
   fs.renameSync(
-    path.join(projectName, "src/assembly/Contract.ts"),
-    path.join(projectName, "src/assembly", `${contractClass}.ts`),
+    path.join(contractFolder, "src/assembly/Contract.ts"),
+    path.join(contractFolder, "src/assembly", `${contractClass}.ts`),
   );
 
   fs.renameSync(
-    path.join(projectName, ".env.example"),
-    path.join(projectName, ".env"),
+    path.join(contractFolder, ".env.example"),
+    path.join(contractFolder, ".env"),
   );
 
   if (templateName === "Generic Contract") {
     fs.renameSync(
-      path.join(projectName, "src/assembly/proto/contract.proto"),
-      path.join(projectName, "src/assembly/proto", `${protoName}.proto`),
+      path.join(contractFolder, "src/assembly/proto/contract.proto"),
+      path.join(contractFolder, "src/assembly/proto", `${protoName}.proto`),
     );
   }
 }
