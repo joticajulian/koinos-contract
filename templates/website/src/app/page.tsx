@@ -85,7 +85,7 @@ export default function Home() {
       });
       setLoading(false);
     }
-  }, [args, signer]);
+  }, [args, signer, contract, selectedMethod]);
 
   const contractMethods = Object.keys(contract.abi!.methods).map((name) => {
     return {
