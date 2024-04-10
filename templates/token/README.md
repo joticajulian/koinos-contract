@@ -1,8 +1,8 @@
-# Token contract - KCS-3.alpha
+# Token contract - KCS-4
 
 ### Configure the contract
 
-First open the contract `src/assembly/___CONTRACT_CLASS___.ts`. As you can see this contract extends the Token Class, which already contains all the methods and parameters for a token.
+First open the contract `packages/contract/src/assembly/___CONTRACT_CLASS___.ts`. As you can see this contract extends the Token Class, which already contains all the methods and parameters for a token.
 
 Now update `_name`, `_symbol`, and `_decimals` to the specific values for your token.
 
@@ -17,9 +17,17 @@ yarn install
 yarn build
 ```
 
-The WASM file will be generated in `src/build/release`.
+The WASM file will be generated in `packages/contract/src/build/release`.
 
 ### Deploy the contract
+
+To deploy the contract you need a private key. If you need to generate new keys run:
+
+```sh
+yarn keys
+```
+
+different keys and the corresponding mnemonic phrase will be displayed in the console. Copy one of them for the following step.
 
 Open the `.env` file and define the following values:
 

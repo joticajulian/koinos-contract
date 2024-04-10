@@ -179,17 +179,26 @@ async function main() {
     path.join(contractFolder, "src/assembly", `${contractClass}.ts`),
   );
 
-  fs.renameSync(
-    path.join(contractFolder, ".env.example"),
-    path.join(contractFolder, ".env"),
-  );
-
   if (templateName === "Generic Contract") {
     fs.renameSync(
       path.join(contractFolder, "src/assembly/proto/contract.proto"),
       path.join(contractFolder, "src/assembly/proto", `${protoName}.proto`),
     );
   }
+
+  // move .env.example to the root and rename it as .env
+  fs.renameSync(
+    path.join(contractFolder, ".env.example"),
+    path.join(projectName, ".env"),
+  );
+
+  // update README.md in the root
+  let readme = fs.readFileSync(path.join(contractFolder, "README.md"), "utf8");
+  if (frontendOption === "Next.js App (React)") {
+    readme += "\n";
+    readme += fs.readFileSync(path.join(websiteFolder, "README.md"), "utf8");
+  }
+  fs.writeFileSync(path.join(projectName, "README.md"), readme);
 }
 
 main()

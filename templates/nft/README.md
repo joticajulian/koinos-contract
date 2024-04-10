@@ -1,12 +1,12 @@
-# NFT contract - KCS-3.alpha
+# NFT contract - KCS-5
 
 ### Configure the contract
 
-First open the contract `src/assembly/___CONTRACT_CLASS___.ts`. As you can see this contract extends the Nft Class, which already contains all the methods and parameters for an NFT collection.
+First open the contract `packages/contract/src/assembly/___CONTRACT_CLASS___.ts`. As you can see this contract extends the Nft Class, which already contains all the methods and parameters for an NFT collection.
 
 Now update `_name`, `_symbol`, and `_uri` to the specific values for your collection.
 
-The `_uri` is the API to resolve the metadata of the NFTs. However, the KCS-3-nft standard allows you to store the metadata onchain so you don't have to provide this API.
+The `_uri` is the API to resolve the metadata of the NFTs. However, the KCS-5 standard allows you to store the metadata onchain so you don't have to provide this API (NOTE: This option is not yet supported by Kollection or Koinos Raffles).
 
 If you plan to store the metadata onchain then set an empty string for the `_uri`:
 
@@ -31,9 +31,17 @@ yarn install
 yarn build
 ```
 
-The WASM file will be generated in `src/build/release`.
+The WASM file will be generated in `packages/contract/src/build/release`.
 
 ### Deploy the contract
+
+To deploy the contract you need a private key. If you need to generate new keys run:
+
+```sh
+yarn keys
+```
+
+different keys and the corresponding mnemonic phrase will be displayed in the console. Copy one of them for the following step.
 
 Open the `.env` file and define the following values:
 

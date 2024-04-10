@@ -1,6 +1,5 @@
 {
   "scripts": {
-    "deploy": "ts-node scripts/deploy.ts",
     "mint": "ts-node scripts/mint.ts",
     "sell": "ts-node scripts/sell.ts"
   }

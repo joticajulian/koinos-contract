@@ -22,7 +22,11 @@ export function toPascalCase(string: string) {
     .replace(new RegExp(/\w/), (s) => s.toUpperCase());
 }
 
-export function updatePackageJson(projectSource: string, projectName: string) {
+export function updatePackageJson(
+  projectSource: string,
+  projectName: string,
+  forRoot: boolean = false,
+) {
   const file1 = path.join(__dirname, "../templates/baseContract/package.json");
   const file2 = path.join(
     __dirname,
@@ -35,7 +39,11 @@ export function updatePackageJson(projectSource: string, projectName: string) {
 
   // TODO: create a general merge of jsons
   Object.keys(json2.scripts).forEach((script) => {
-    json1.scripts[script] = json2.scripts[script];
+    if (forRoot) {
+      json1.scripts[script] = `yarn workspace koinos-contract ${script}`;
+    } else {
+      json1.scripts[script] = json2.scripts[script];
+    }
   });
 
   const dataDestination = JSON.stringify(json1, null, 2);
