@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.0.0-alpha.12](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.12) (2024-04-10)
+
+### 🚀 Features
+
+- Option to bootstrap a frontend in NextJS
+- Use of workspaces for frontend and contract
+
+### 🐛 Bug Fixes
+
+- Fix selection of template
+
 ## [v1.0.0-alpha.11](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.11) (2024-03-05)
 
 ### 🐛 Bug Fixes
