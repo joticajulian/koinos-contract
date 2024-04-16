@@ -1,11 +1,11 @@
-# koinos-contract
+# Arkinos
 
 CLI tool to bootstrap a koinos contract.
 
 To create a new project run:
 
 ```
-npx create-koinos-contract
+npx arkinos
 ```
 
 Select between 3 different templates:

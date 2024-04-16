@@ -1,6 +1,6 @@
 {
-  "name": "create-koinos-contract",
-  "version": "1.0.0-alpha.12",
+  "name": "arkinos",
+  "version": "1.0.0",
   "description": "CLI tool to bootstrap a koinos contract",
   "author": "Julian Gonzalez",
   "type": "module",
@@ -18,7 +18,7 @@
   ],
   "main": "./lib/index.js",
   "bin": {
-    "create-koinos-contract": "bin/create-koinos-contract.mjs"
+    "arkinos": "bin/arkinos.mjs"
   },
   "scripts": {
     "audit": "audit-ci",
