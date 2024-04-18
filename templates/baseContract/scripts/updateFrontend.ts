@@ -14,6 +14,11 @@ async function main() {
   const network = koinosConfig.networks[networkName];
   if (!network) throw new Error(`network ${networkName} not found`);
 
+  if (!network.accounts.contract.privateKeyWif) {
+    throw new Error(
+      `no private key defined for the contract in ${networkName}`,
+    );
+  }
   const contractAccount = Signer.fromWif(
     network.accounts.contract.privateKeyWif,
   );

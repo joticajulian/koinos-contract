@@ -9,6 +9,8 @@ import abi from "../src/build/___CONTRACT_ABI_FILE___";
 import koinosConfig from "../src/koinos.config.js";
 
 dotenv.config();
+if (!["true", "false"].includes(process.env.USE_FREE_MANA))
+  throw new Error(`The env var USE_FREE_MANA must be true or false`);
 const useFreeMana = process.env.USE_FREE_MANA === "true";
 const [inputNetworkName] = process.argv.slice(2);
 
@@ -23,6 +25,11 @@ async function main() {
     provider,
   });
 
+  if (!network.accounts.contract.privateKeyWif) {
+    throw new Error(
+      `no private key defined for the contract in ${networkName}`,
+    );
+  }
   const contractAccount = Signer.fromWif(
     network.accounts.contract.privateKeyWif,
   );
@@ -43,6 +50,11 @@ async function main() {
       rcLimit,
     };
   } else {
+    if (!network.accounts.manaSharer.privateKeyWif) {
+      throw new Error(
+        `no private key defined for the manaSharer in ${networkName}`,
+      );
+    }
     const manaSharer = Signer.fromWif(
       network.accounts.manaSharer.privateKeyWif,
     );

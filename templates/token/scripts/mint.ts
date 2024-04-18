@@ -13,6 +13,8 @@ dotenv.config();
 
 if (!process.env.TOTAL_SUPPLY)
   throw new Error(`The env var TOTAL_SUPPLY is not defined`);
+if (!["true", "false"].includes(process.env.USE_FREE_MANA))
+  throw new Error(`The env var USE_FREE_MANA must be true or false`);
 
 const useFreeMana = process.env.USE_FREE_MANA === "true";
 const totalSupply = process.env.TOTAL_SUPPLY;
@@ -25,6 +27,11 @@ async function main() {
   if (!network) throw new Error(`network ${networkName} not found`);
   const provider = new Provider(network.rpcNodes);
 
+  if (!network.accounts.contract.privateKeyWif) {
+    throw new Error(
+      `no private key defined for the contract in ${networkName}`,
+    );
+  }
   const contractAccount = Signer.fromWif(
     network.accounts.contract.privateKeyWif,
   );
@@ -45,6 +52,11 @@ async function main() {
       rcLimit,
     };
   } else {
+    if (!network.accounts.manaSharer.privateKeyWif) {
+      throw new Error(
+        `no private key defined for the manaSharer in ${networkName}`,
+      );
+    }
     const manaSharer = Signer.fromWif(
       network.accounts.manaSharer.privateKeyWif,
     );

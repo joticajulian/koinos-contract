@@ -33,6 +33,11 @@ async function main() {
   if (!network) throw new Error(`network ${networkName} not found`);
   const provider = new Provider(network.rpcNodes);
 
+  if (!network.accounts.contract.privateKeyWif) {
+    throw new Error(
+      `no private key defined for the contract in ${networkName}`,
+    );
+  }
   const contractAccount = Signer.fromWif(
     network.accounts.contract.privateKeyWif,
   );
@@ -53,6 +58,11 @@ async function main() {
       rcLimit,
     };
   } else {
+    if (!network.accounts.manaSharer.privateKeyWif) {
+      throw new Error(
+        `no private key defined for the manaSharer in ${networkName}`,
+      );
+    }
     const manaSharer = Signer.fromWif(
       network.accounts.manaSharer.privateKeyWif,
     );
