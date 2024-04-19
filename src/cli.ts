@@ -109,7 +109,9 @@ async function main() {
   if (frontendOption === "Next.js App (React)") {
     // create website
     sourceDir = path.join(__dirname, "../templates/website");
-    fse.copySync(sourceDir, websiteFolder);
+    fse.copySync(sourceDir, websiteFolder, {
+      filter: (p) => !p.includes("node_modules"),
+    });
     createFrontend = true;
   }
 
@@ -148,6 +150,7 @@ async function main() {
     sourceDir = path.join(__dirname, "../templates/generic");
     fse.copySync(sourceDir, contractFolder);
     updatePackageJson("generic", contractFolder);
+    updatePackageJson("generic", projectName, true);
     filesToUpdate.push(
       path.join(contractFolder, "src/assembly/proto/contract.proto"),
     );
@@ -155,6 +158,7 @@ async function main() {
     sourceDir = path.join(__dirname, "../templates/nft");
     fse.copySync(sourceDir, contractFolder);
     updatePackageJson("nft", contractFolder);
+    updatePackageJson("nft", projectName, true);
     filesToUpdate.push(
       path.join(contractFolder, "scripts/mint.ts"),
       path.join(contractFolder, "scripts/sell.ts"),
@@ -163,6 +167,7 @@ async function main() {
     sourceDir = path.join(__dirname, "../templates/token");
     fse.copySync(sourceDir, contractFolder);
     updatePackageJson("token", contractFolder);
+    updatePackageJson("token", projectName, true);
     filesToUpdate.push(path.join(contractFolder, "scripts/mint.ts"));
   }
 

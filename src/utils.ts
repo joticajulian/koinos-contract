@@ -27,7 +27,12 @@ export function updatePackageJson(
   projectName: string,
   forRoot: boolean = false,
 ) {
-  const file1 = path.join(__dirname, "../templates/baseContract/package.json");
+  const file1 = path.join(
+    __dirname,
+    forRoot
+      ? "../templates/baseWorkspaces/package.json"
+      : "../templates/baseContract/package.json",
+  );
   const file2 = path.join(
     __dirname,
     `../templates/${projectSource}/package.json`,
