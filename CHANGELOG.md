@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.1.0](https://github.com/joticajulian/koinos-contract/releases/tag/v1.1.0) (2024-04-19)
+
+### 🚀 Features
+
+- Using koilib v6
+- Error messages improved when .env vars are not present
+
+### 🐛 Bug Fixes
+
+- Fix scripts in package.json in the root
+
 ## [v1.0.0-alpha.12](https://github.com/joticajulian/koinos-contract/releases/tag/v1.0.0-alpha.12) (2024-04-10)
 
 ### 🚀 Features
