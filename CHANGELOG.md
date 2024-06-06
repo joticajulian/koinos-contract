@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.1.1](https://github.com/joticajulian/koinos-contract/releases/tag/v1.1.1) (2024-06-06)
+
+### 🐛 Bug Fixes
+
+- Fix issue when copying the files of the website
+
 ## [v1.1.0](https://github.com/joticajulian/koinos-contract/releases/tag/v1.1.0) (2024-04-19)
 
 ### 🚀 Features
