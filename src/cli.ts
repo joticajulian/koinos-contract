@@ -109,8 +109,12 @@ async function main() {
   if (frontendOption === "Next.js App (React)") {
     // create website
     sourceDir = path.join(__dirname, "../templates/website");
+    const skipFolder =
+      process.platform === "win32"
+        ? "templates\\website\\node_modules"
+        : "templates/website/node_modules";
     fse.copySync(sourceDir, websiteFolder, {
-      filter: (p) => !p.includes("node_modules"),
+      filter: (p) => !p.includes(skipFolder),
     });
     createFrontend = true;
   }
