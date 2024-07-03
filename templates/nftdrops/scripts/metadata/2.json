@@ -1,0 +1,15 @@
+{
+  "name": "My NFT #2",
+  "description": "description #2",
+  "image": "http://example.com/2.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Body",
+      "value": "White"
+    }
+  ]
+}

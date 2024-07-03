@@ -1,4 +1,8 @@
-# NFT contract - KCS-5
+# NFT contract adapted for Kollection Drops - KCS-5
+
+This NFT contract extends the KCS-5 standard in order to add Drops,
+where the "mint" function can be used to mint multiple tokens and at
+the same time it's possible to set a price to mint them.
 
 ### Configure the contract
 
@@ -45,6 +49,9 @@ different keys and the corresponding mnemonic phrase will be displayed in the co
 
 Open the `.env` file and define the following values:
 
+- `MINT_ONLY_BY_COLLECTION_OWNER`: Set "false" if anyone can mint an NFT by paying a fee (Kollection drops). Set "true" if only the collection owner can mint tokens.
+- `ADDRESS_PAY`: Address that will receive the payments. Do not define it if MINT_ONLY_BY_COLLECTION_OWNER is true.
+- `PRICE`: Price of NFTs in satoshis. That is, for 12.3 KOIN set 1230000000.
 - `USE_FREE_MANA`: Set true or false. When "true" it will use free mana provided by Kondor to deploy the contract. If it is false then define the private key of an account with funds in order to use its mana.
 - `HARBINGER_MANA_SHARER_PRIVATE_KEY`: Private key of an account with funds in harbinger. You can skip this value if `USE_FREE_MANA` is set to true.
 - `MAINNET_MANA_SHARER_PRIVATE_KEY`: Private key of an account with funds in mainnet. You can skip this value if `USE_FREE_MANA` is set to true.
@@ -63,31 +70,18 @@ To deploy the contract in mainnet run:
 yarn deploy mainnet
 ```
 
-### Mint NFTs
+### Define Metadata
 
-Now open the `.env` file and define the following values:
+Run this script if you want to store the metadata onchain. First, define the metadata in the folder "scripts/metadata" (open this folder to see an example of the format). Open the `.env` file and define `TOTAL_NFTS` with the total NFTs.
 
-- `TOTAL_NFTS`: Total NFTs to mint in the collection.
-- `WRITE_METADATA`: Set true or false. If it is "true", then the script will submit the metadata to the blockchain. In that case update the metadata files in "scripts/metadata" folder.
-
-To mint the NFTs in harbinger run:
+Run the following command to set the metadata in harbinger:
 
 ```sh
-yarn mint
+yarn metadata
 ```
 
-To mint the NFTs in mainnet run:
+Run the following command for mainnet:
 
 ```sh
-yarn mint mainnet
-```
-
-### Sell NFTs
-
-Open the `.env` file and define the `PRICE` in KOIN.
-
-To sell the NFTs in https://kollection.app/ run:
-
-```sh
-yarn sell mainnet kollection
+yarn metadata mainnet
 ```

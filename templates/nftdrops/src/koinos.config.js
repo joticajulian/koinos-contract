@@ -22,7 +22,7 @@ function keysHarbinger(index) {
 
 module.exports = {
   class: "___CONTRACT_CLASS___",
-  proto: ["./proto/empty.proto"],
+  proto: ["./proto/___PROTO_NAME___.proto"],
   files: ["./___CONTRACT_CLASS___.ts"],
   supportAbi1: true,
   sourceDir: "./assembly",

@@ -69,7 +69,7 @@ module.exports = {
       rpcNodes: ["https://api.koinos.io"],
       accounts: {
         freeManaSharer: {
-          id: "1KyZyhNwiDo6a93f3FvK8pxspKdgEtQDwa", // @kondor-nft
+          id: "162GhJwsciDiKsgwzj2t6VoFHt3RMzGKdG", // @freemanasharer
         },
         manaSharer: {
           privateKeyWif: process.env.MAINNET_MANA_SHARER_PRIVATE_KEY,

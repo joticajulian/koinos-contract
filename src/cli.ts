@@ -10,6 +10,7 @@ const templateNames = [
   "Generic Contract",
   "Token Contract",
   "NFT Contract",
+  "NFT Contract (+drops Kollection)",
 ] as const;
 type TemplateName = (typeof templateNames)[number];
 
@@ -167,6 +168,15 @@ async function main() {
       path.join(contractFolder, "scripts/mint.ts"),
       path.join(contractFolder, "scripts/sell.ts"),
     );
+  } else if (templateName === "NFT Contract (+drops Kollection)") {
+    sourceDir = path.join(__dirname, "../templates/nftdrops");
+    fse.copySync(sourceDir, contractFolder);
+    updatePackageJson("nftdrops", contractFolder);
+    updatePackageJson("nftdrops", projectName, true);
+    filesToUpdate.push(
+      path.join(contractFolder, "src/assembly/proto/contract.proto"),
+      path.join(contractFolder, "scripts/metadata.ts"),
+    );
   } else if (templateName === "Token Contract") {
     sourceDir = path.join(__dirname, "../templates/token");
     fse.copySync(sourceDir, contractFolder);
@@ -189,6 +199,16 @@ async function main() {
   );
 
   if (templateName === "Generic Contract") {
+    fs.renameSync(
+      path.join(contractFolder, "src/assembly/proto/contract.proto"),
+      path.join(contractFolder, "src/assembly/proto", `${protoName}.proto`),
+    );
+  } else if (templateName === "NFT Contract") {
+    fs.renameSync(
+      path.join(contractFolder, "src/assembly/proto/contract.proto"),
+      path.join(contractFolder, "src/assembly/proto", `${protoName}.proto`),
+    );
+  } else if (templateName === "NFT Contract (+drops Kollection)") {
     fs.renameSync(
       path.join(contractFolder, "src/assembly/proto/contract.proto"),
       path.join(contractFolder, "src/assembly/proto", `${protoName}.proto`),
