@@ -8,10 +8,11 @@ To create a new project run:
 npx arkinos
 ```
 
-Select between 3 different templates:
+Select between 4 different templates:
 
 - Token Contract
 - NFT Contract
+- NFT Contract (+drops Kollection)
 - Generic Contract
 
 Select also if you want to create a frontend to interact with the contract. The frontend is powered by Next.js (React).
