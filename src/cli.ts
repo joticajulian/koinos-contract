@@ -203,11 +203,6 @@ async function main() {
       path.join(contractFolder, "src/assembly/proto/contract.proto"),
       path.join(contractFolder, "src/assembly/proto", `${protoName}.proto`),
     );
-  } else if (templateName === "NFT Contract") {
-    fs.renameSync(
-      path.join(contractFolder, "src/assembly/proto/contract.proto"),
-      path.join(contractFolder, "src/assembly/proto", `${protoName}.proto`),
-    );
   } else if (templateName === "NFT Contract (+drops Kollection)") {
     fs.renameSync(
       path.join(contractFolder, "src/assembly/proto/contract.proto"),

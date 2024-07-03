@@ -26,3 +26,26 @@ Go back to the code and take a special look to the folder `packages/website/src/
 - `abi.ts`: ABI of your contract.
 - `contract.ts`: Creation of the contract class to be able to interact with the blockchain. It contains the code to read data and submit transactions.
 - `wallet.ts`: The submission of transactions require a signer. This file provides the code to get the signer from the principal wallets in koinos.
+
+### Frontend for a different contract
+
+You can also bootstrap the frontend for any contract deployed on the blockchain by
+referencing its contract id. The script will download the ABI and configure the website for it.
+
+Here is an example to load the KOIN contract on harbinger:
+
+```bash
+yarn updateFrontend harbinger 1FaSvLjQJsCJKq5ybmGsMMQs8RQYyVv8ju
+```
+
+And for mainnet:
+
+```bash
+yarn updateFrontend mainnet 15DJN4a8SgrbGhhGksSBASiSYjGnMU8dGL
+```
+
+then launch the website:
+
+```bash
+yarn dev
+```

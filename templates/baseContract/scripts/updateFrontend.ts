@@ -1,27 +1,59 @@
 /**
  * Script to update constants and abi in the frontend
  */
-import { Signer } from "koilib";
+import { Signer, Contract, Provider, Abi } from "koilib";
 import fs from "fs";
 import path from "path";
-import abi from "../src/build/___CONTRACT_ABI_FILE___";
 import koinosConfig from "../src/koinos.config.js";
 
-const [inputNetworkName] = process.argv.slice(2);
+let [inputNetworkName, contractId] = process.argv.slice(2);
+let abi: Abi;
 
 async function main() {
   const networkName = inputNetworkName || "harbinger";
   const network = koinosConfig.networks[networkName];
   if (!network) throw new Error(`network ${networkName} not found`);
 
-  if (!network.accounts.contract.privateKeyWif) {
-    throw new Error(
-      `no private key defined for the contract in ${networkName}`,
+  if (contractId) {
+    // take ABI from the blockchain
+    const contract = new Contract({
+      id: contractId,
+      provider: new Provider(network.rpcNodes),
+    });
+    abi = await contract.fetchAbi({
+      updateFunctions: false,
+      updateSerializer: false,
+    });
+    Object.keys(abi.methods).forEach((m) => {
+      if (
+        abi.methods[m].entry_point === undefined &&
+        abi.methods[m]["entry-point"] !== undefined
+      ) {
+        abi.methods[m].entry_point = Number(abi.methods[m]["entry-point"]);
+      }
+      if (
+        abi.methods[m].read_only === undefined &&
+        abi.methods[m]["read-only"] !== undefined
+      ) {
+        abi.methods[m].read_only = abi.methods[m]["read-only"];
+      }
+    });
+  } else {
+    // take ABI from build folder and contractId koinos.config.js
+    if (!network.accounts.contract.privateKeyWif) {
+      throw new Error(
+        `no private key defined for the contract in ${networkName}`,
+      );
+    }
+    contractId = Signer.fromWif(
+      network.accounts.contract.privateKeyWif,
+    ).address;
+    const abiString = fs.readFileSync(
+      path.join(__dirname, "../src/build/___CONTRACT_ABI_FILE___"),
+      "utf8",
     );
+    abi = JSON.parse(abiString);
   }
-  const contractAccount = Signer.fromWif(
-    network.accounts.contract.privateKeyWif,
-  );
 
   const constantsFile = path.join(
     __dirname,
@@ -33,7 +65,7 @@ async function main() {
       .split("\n")
       .map((line) => {
         if (line.startsWith("export const CONTRACT_ID = ")) {
-          return `export const CONTRACT_ID = "${contractAccount.address}";`;
+          return `export const CONTRACT_ID = "${contractId}";`;
         }
         if (line.startsWith("export const RPC_NODE = ")) {
           return `export const RPC_NODE = "${network.rpcNodes[0]}";`;
