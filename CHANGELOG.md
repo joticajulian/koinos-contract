@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.2.0](https://github.com/joticajulian/koinos-contract/releases/tag/v1.2.0) (2024-07-04)
+
+### 🚀 Features
+
+- Template for NFT contract adapted for Kollection drops
+- Add contractId parameter in updateFrontend script to bootstrap any contract
+
 ## [v1.1.1](https://github.com/joticajulian/koinos-contract/releases/tag/v1.1.1) (2024-06-06)
 
 ### 🐛 Bug Fixes
