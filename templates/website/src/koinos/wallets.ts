@@ -1,13 +1,17 @@
 import { SignerInterface } from "koilib";
 import * as kondor from "kondor-js";
 import MyKoinosWallet from "@roamin/my-koinos-wallet-sdk";
-import * as wc from "@armana/walletconnect-koinos-sdk-js";
+import {
+  ChainIds,
+  Methods,
+  WebWalletConnectKoinos,
+} from "@armana/walletconnect-koinos-sdk-js";
 import { NETWORK_NAME, WALLET_CONNECT_MODAL_SIGN_OPTIONS } from "./constants";
 
 export type WalletName = "kondor" | "mkw" | "walletConnect";
 
 // setup wallets
-const walletConnectKoinos = new wc.WalletConnectKoinos(
+const walletConnectKoinos = new WebWalletConnectKoinos(
   WALLET_CONNECT_MODAL_SIGN_OPTIONS,
 );
 const mkw = new MyKoinosWallet(
@@ -27,13 +31,13 @@ export async function connectWallet(walletName: WalletName) {
       const [address] = await walletConnectKoinos.connect(
         [
           (NETWORK_NAME as string) === "mainnet"
-            ? wc.ChainIds.Mainnet
-            : wc.ChainIds.Harbinger,
+            ? ChainIds.Mainnet
+            : ChainIds.Harbinger,
         ],
         [
-          wc.Methods.SignTransaction,
-          wc.Methods.SignAndSendTransaction,
-          wc.Methods.WaitForTransaction,
+          Methods.SignTransaction,
+          Methods.SignAndSendTransaction,
+          Methods.WaitForTransaction,
         ],
       );
       return address;
