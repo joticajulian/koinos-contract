@@ -3,9 +3,16 @@
  * This script assumes that the owner of the NFTs is the
  * contract itself.
  */
-import { Signer, Contract, Provider, Transaction, utils } from "koilib";
+import {
+  Signer,
+  Contract,
+  Provider,
+  Transaction,
+  utils,
+  TransactionJson,
+  TransactionOptions,
+} from "koilib";
 import * as dotenv from "dotenv";
-import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
 import abi from "../src/build/___CONTRACT_ABI_FILE___";
 import abiMarketPlace from "./abi-market.json";
 import koinosConfig from "../src/koinos.config.js";
@@ -149,7 +156,7 @@ async function main() {
       console.log(
         `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`,
       );
-      const { blockNumber } = await tx.wait("byBlock", 60000);
+      const { blockNumber } = await tx.wait();
       console.log(`mined in block ${blockNumber} (${networkName})`);
     }
     nextNFT = i;

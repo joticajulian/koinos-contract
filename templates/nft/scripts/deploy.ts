@@ -1,9 +1,14 @@
 /**
  * Script to deploy the contract
  */
-import { Signer, Contract, Provider } from "koilib";
+import {
+  Signer,
+  Contract,
+  Provider,
+  TransactionJson,
+  TransactionOptions,
+} from "koilib";
 import * as dotenv from "dotenv";
-import { TransactionJson, TransactionOptions } from "koilib/lib/interface";
 import { getBytecode } from "./utils";
 import abi from "../src/build/___CONTRACT_ABI_FILE___";
 import koinosConfig from "../src/koinos.config.js";
@@ -86,7 +91,7 @@ async function main() {
   console.log(
     `consumption: ${(Number(receipt.rc_used) / 1e8).toFixed(2)} mana`,
   );
-  const { blockNumber } = await transaction.wait("byBlock", 60000);
+  const { blockNumber } = await transaction.wait();
   console.log(
     `Contract ${contractAccount.address} uploaded in block number ${blockNumber} (${networkName})`,
   );

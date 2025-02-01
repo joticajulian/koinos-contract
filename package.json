@@ -24,6 +24,7 @@
     "audit": "audit-ci",
     "build": "rimraf lib && tsc",
     "dev": "rimraf local && ts-node --esm src/cli.ts",
+    "dev2": "rimraf local && node --loader ts-node/esm src/cli.ts",
     "lint": "yarn lint:prettier && yarn lint:eslint && yarn lint:tsc",
     "lint:prettier": "prettier . --check",
     "lint:eslint": "eslint . --ext .js,.ts",
