@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.3.0](https://github.com/joticajulian/koinos-contract/releases/tag/v1.3.0) (2025-02-01)
+
+### 🚀 Features
+
+- Bump libraries: koilib, koinos-precompiler-as, @koinosbox/contracts, walletconnect.
+- The temporal use of the @koinosbox/sdk-as@1.1.0-alpha.4 has been replaced by the official library @koinos/sdk-as since it already includes the security updates for check authority (renamed as System.checkAccountAuthority).
+- koinosbox/contracts includes new contracts (SmartWalletAllowance, TextParserLib, Manuscript, EthAddress) and includes useful functions in System2 like checkMessageSignedByEthAddress and hexString.
+
 ## [v1.2.0](https://github.com/joticajulian/koinos-contract/releases/tag/v1.2.0) (2024-07-04)
 
 ### 🚀 Features
