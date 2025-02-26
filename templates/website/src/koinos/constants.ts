@@ -1,4 +1,4 @@
-export const CONTRACT_ID = "1FaSvLjQJsCJKq5ybmGsMMQs8RQYyVv8ju";
+export const CONTRACT_ID = "1EdLyQ67LW6HVU1dWoceP4firtyz77e37Y";
 export const RPC_NODE = "https://harbinger-api.koinos.io";
 export const BLOCK_EXPLORER = "https://harbinger.koinosblocks.com";
 export const NETWORK_NAME = "harbinger";

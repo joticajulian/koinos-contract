@@ -7,7 +7,7 @@
     "@koinosbox/contracts": "^3.0.0",
     "@koinosbox/hdkoinos": "1.0.1",
     "koilib": "^9.1.0",
-    "koinos-precompiler-as": "^1.7.2"
+    "koinos-precompiler-as": "^1.7.3"
   },
   "devDependencies": {
     "@as-covers/core": "^0.4.2",
