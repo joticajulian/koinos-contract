@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. 🤘
 
+## [v1.3.1](https://github.com/joticajulian/koinos-contract/releases/tag/v1.3.1) (2025-02-26)
+
+### 🚀 Features
+
+- Bump libraries: koinos-precompiler-as (fixes an issue in proto files with extended contracts)
+
 ## [v1.3.0](https://github.com/joticajulian/koinos-contract/releases/tag/v1.3.0) (2025-02-01)
 
 ### 🚀 Features
